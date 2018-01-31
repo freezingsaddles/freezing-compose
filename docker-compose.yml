@@ -39,8 +39,8 @@ services:
     build: ./docker-beanstalkd
     hostname: freezing-beanstalkd
     container_name: freezing-beanstalkd
-    ports:
-      - "11300:11300"
+    # ports:
+    #  - "11300:11300"
     volumes:
       - beanstalkd-data:/data
     restart: unless-stopped
