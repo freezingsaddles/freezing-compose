@@ -24,14 +24,15 @@ services:
   # ----------------------------------------------------------------------------
 
   logspout:
-    image: gliderlabs/logspout
+    image: iamatypeofwalrus/logspout-loggly
     hostname: freezing-logspout
     container_name: freezing-logspout
-    command: "syslog+tcp://logs-01.loggly.com:514"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/tmp/docker.sock
     environment:
-      SYSLOG_STRUCTURED_DATA: "${LOGGLY_TOKEN}@41058 tag=\"digitalocean\""
+      LOGGLY_TOKEN: ${LOGGLY_TOKEN}
+      LOGGLY_TAGS: docker
+#      FILTER_NAME:
     restart: unless-stopped
 
   beanstalkd:
