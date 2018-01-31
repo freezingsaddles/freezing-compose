@@ -1,0 +1,105 @@
+version: '2'
+#
+volumes:
+  freezing-data:
+    external: true
+  beanstalkd-data:
+    external: true
+
+services:
+
+  # The database is not expected to be part of this set of containers.
+  #
+  # You can either run this directly on the host or in a container by adding in
+  # the docker-comopse.devsupport.yml file:
+  #
+  #  docker-compose -f docker-compose.yml -f docker-compose.devsupport.yml up
+
+  # ----------------------------------------------------------------------------
+  # Infrastructure containers
+  # ----------------------------------------------------------------------------
+  beanstalkd:
+    build: ./docker-beanstalkd
+    hostname: freezing-beanstalkd
+    container_name: freezing-beanstalkd
+    ports:
+      - "11300:11300"
+    volumes:
+      - beanstalkd-data:/data
+
+
+  nginx:
+    image: nginx:stable
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - /etc/nginx/conf.d
+
+  docker-gen:
+    image: jwilder/docker-gen
+    container_name: docker-gen
+    command: -notify-sighup nginx -watch /etc/docker-gen/templates/nginx.tmpl /etc/nginx/conf.d/default.conf
+    volumes_from:
+      - nginx
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./web/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl
+
+  # ----------------------------------------------------------------------------
+  # Application Containers
+  # ----------------------------------------------------------------------------
+
+  freezing-sync:
+    image: freezingsaddles/freezing-sync:latest
+    hostname: freezing-sync
+    container_name: freezing-sync
+    links:
+      - beanstalkd:beanstalkd.container
+    environment:
+      DEBUG: ${DEBUG}
+      BEANSTALKD_HOST: beanstalkd.container
+      BEANSTALKD_PORT: 11300
+      SQLALCHEMY_URL: ${SQLALCHEMY_URL}
+      STRAVA_CLIENT_ID: ${STRAVA_CLIENT_ID}
+      STRAVA_CLIENT_SECRET: ${STRAVA_CLIENT_SECRET}
+      WUNDERGROUND_API_KEY: ${WUNDERGROUND_API_KEY}
+      TEAMS: ${TEAMS}
+      OBSERVER_TEAMS: ${OBSERVER_TEAMS}
+      START_DATE: ${START_DATE}
+      END_DATE: ${END_DATE}
+    volumes:
+      - ./sync-data:/data
+
+  freezing-nq:
+    image: freezingsaddles/freezing-nq:latest
+    hostname: freezing-nq
+    container_name: freezing-nq
+    links:
+      - beanstalkd:beanstalkd.container
+    environment:
+      VIRTUAL_HOST: ${FREEZING_NQ_FQDN}
+      DEBUG: ${DEBUG}
+      BEANSTALKD_HOST: beanstalkd.container
+      BEANSTALKD_PORT: 11300
+      STRAVA_VERIFY_TOKEN: ${STRAVA_VERIFY_TOKEN}
+
+  freezing-web:
+    image: freezingsaddles/freezing-web:latest
+    hostname: freezing-web
+    container_name: freezing-web
+    links:
+      - beanstalkd:beanstalkd.container
+    environment:
+      VIRTUAL_HOST: ${FREEZING_WEB_FQDN}
+      DEBUG: ${DEBUG}
+      SQLALCHEMY_URL: ${SQLALCHEMY_URL}
+      BEANSTALKD_HOST: beanstalkd.container
+      BEANSTALKD_PORT: 11300
+      STRAVA_CLIENT_ID: ${STRAVA_CLIENT_ID}
+      STRAVA_CLIENT_SECRET: ${STRAVA_CLIENT_SECRET}
+      TEAMS: ${TEAMS}
+      OBSERVER_TEAMS: ${OBSERVER_TEAMS}
+      START_DATE: ${START_DATE}
+      END_DATE: ${END_DATE}
+      TIMEZONE: ${TIMEZONE:-America/New_York}
