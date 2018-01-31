@@ -22,6 +22,18 @@ services:
   # ----------------------------------------------------------------------------
   # Infrastructure containers
   # ----------------------------------------------------------------------------
+
+  logspout:
+    image: gliderlabs/logspout
+    hostname: freezing-logspout
+    container_name: freezing-logspout
+    command: "syslog+tcp://logs-01.loggly.com:514"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      SYSLOG_STRUCTURED_DATA: "${LOGGLY_TOKEN}@41058 tag=\"digitalocean\""
+    restart: unless-stopped
+
   beanstalkd:
     build: ./docker-beanstalkd
     hostname: freezing-beanstalkd
@@ -30,6 +42,7 @@ services:
       - "11300:11300"
     volumes:
       - beanstalkd-data:/data
+    restart: unless-stopped
 
   nginx:
     image: nginx:stable
@@ -44,6 +57,7 @@ services:
       - 'nginx-webroot:/usr/share/nginx/html'
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
+    restart: unless-stopped
 
   nginx-letsencrypt:
     image: jrcs/letsencrypt-nginx-proxy-companion
@@ -58,6 +72,7 @@ services:
       - 'nginx-vhosts:/etc/nginx/vhost.d'
       - 'nginx-webroot:/usr/share/nginx/html'
       - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    restart: unless-stopped
 
   nginx-docker-gen:
     image: jwilder/docker-gen
@@ -73,6 +88,7 @@ services:
       - './web/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl'
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.docker_gen"
+    restart: unless-stopped
 
   # ----------------------------------------------------------------------------
   # Application Containers
@@ -98,6 +114,7 @@ services:
       END_DATE: ${END_DATE}
     volumes:
       - ./sync-data:/data
+    restart: unless-stopped
 
   freezing-nq:
     image: freezingsaddles/freezing-nq:latest
@@ -113,6 +130,7 @@ services:
       BEANSTALKD_HOST: beanstalkd.container
       BEANSTALKD_PORT: 11300
       STRAVA_VERIFY_TOKEN: ${STRAVA_VERIFY_TOKEN}
+    restart: unless-stopped
 
   freezing-web:
     image: freezingsaddles/freezing-web:latest
@@ -136,3 +154,4 @@ services:
       START_DATE: ${START_DATE}
       END_DATE: ${END_DATE}
       TIMEZONE: ${TIMEZONE:-America/New_York}
+    restart: unless-stopped
