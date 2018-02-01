@@ -37,12 +37,12 @@ services:
     logging:
       driver: json-file
       options:
-        max-file: 2
+        max-file: "2"
         max-size: 10m
 
   logspout:
     image: gliderlabs/logspout
-    hostname: freezing-logspout
+    hostname: logspout
     container_name: logspout
     command: "${SYSLOG_ENDPOINT}"
     volumes:
@@ -53,7 +53,7 @@ services:
     logging:
       driver: json-file
       options:
-        max-file: 2
+        max-file: "2"
         max-size: 10m
 
   beanstalkd:
@@ -68,7 +68,7 @@ services:
     logging:
       driver: json-file
       options:
-        max-file: 2
+        max-file: "2"
         max-size: 10m
 
   nginx:
@@ -89,7 +89,7 @@ services:
     logging:
       driver: json-file
       options:
-        max-file: 2
+        max-file: "2"
         max-size: 10m
 
   nginx-letsencrypt:
@@ -109,7 +109,7 @@ services:
     logging:
       driver: json-file
       options:
-        max-file: 2
+        max-file: "2"
         max-size: 10m
 
   nginx-docker-gen:
@@ -130,7 +130,7 @@ services:
     logging:
       driver: json-file
       options:
-        max-file: 2
+        max-file: "2"
         max-size: 10m
 
   # ----------------------------------------------------------------------------
@@ -161,7 +161,7 @@ services:
     logging:
       driver: json-file
       options:
-        max-file: 2
+        max-file: "2"
         max-size: 10m
 
   freezing-nq:
@@ -182,7 +182,7 @@ services:
     logging:
       driver: json-file
       options:
-        max-file: 2
+        max-file: "2"
         max-size: 10m
 
   freezing-web:
@@ -211,5 +211,5 @@ services:
     logging:
       driver: json-file
       options:
-        max-file: 2
+        max-file: "2"
         max-size: 10m
