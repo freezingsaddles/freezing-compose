@@ -43,12 +43,12 @@ services:
   logspout:
     image: gliderlabs/logspout
     hostname: freezing-logspout
-    container_name: freezing-logspout
+    container_name: logspout
     command: "${SYSLOG_ENDPOINT}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      SYSLOG_STRUCTURED_DATA: ${SYSLOG_STRUCTURED_DATA}
+    # environment:
+    #   SYSLOG_STRUCTURED_DATA: ${SYSLOG_STRUCTURED_DATA}
     restart: unless-stopped
     logging:
       driver: json-file
@@ -58,8 +58,8 @@ services:
 
   beanstalkd:
     build: ./docker-beanstalkd
-    hostname: freezing-beanstalkd
-    container_name: freezing-beanstalkd
+    hostname: beanstalkd
+    container_name: beanstalkd
     ports:
       - "11300:11300"
     volumes:
@@ -73,6 +73,7 @@ services:
 
   nginx:
     image: nginx:stable
+    hostname: nginx
     container_name: nginx
     ports:
       - "80:80"
