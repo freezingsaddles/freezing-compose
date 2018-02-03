@@ -155,6 +155,8 @@ services:
       OBSERVER_TEAMS: ${OBSERVER_TEAMS}
       START_DATE: ${START_DATE}
       END_DATE: ${END_DATE}
+      DATADOG_API_KEY: ${DATADOG_API_KEY}
+      DATADOG_APP_KEY: ${DATADOG_APP_KEY}
     volumes:
       - ./sync-data:/data
     restart: unless-stopped
