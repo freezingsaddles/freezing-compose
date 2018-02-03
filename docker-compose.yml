@@ -140,9 +140,10 @@ services:
   freezing-sync:
     image: freezingsaddles/freezing-sync:latest
     hostname: freezing-sync
-    container_name: freezing-sync
+    container_name: freezing-sync8125/udp
     links:
       - beanstalkd:beanstalkd.container
+      - datadog:datadog.container
     environment:
       DEBUG: ${DEBUG}
       BEANSTALKD_HOST: beanstalkd.container
