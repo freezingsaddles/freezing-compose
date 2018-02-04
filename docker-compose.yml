@@ -61,8 +61,8 @@ services:
     build: ./docker-beanstalkd
     hostname: beanstalkd
     container_name: beanstalkd
-    ports:
-      - "11300:11300"
+    # ports:
+    #   - "11300:11300"
     volumes:
       - beanstalkd-data:/data
     restart: unless-stopped
