@@ -34,6 +34,7 @@ services:
     environment:
       SD_BACKEND: docker
       API_KEY: ${DATADOG_API_KEY}
+    restart: unless-stopped
     logging:
       driver: json-file
       options:
