@@ -7,6 +7,8 @@ volumes:
 services:
 
   freezing-web:
+    ports:
+      - 8000:8000
     links:
       - beanstalkd:beanstalkd.container
       - mysql:mysql.container
