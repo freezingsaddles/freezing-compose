@@ -25,7 +25,7 @@ cd /opt/Compose
 docker-compose ps
 ```
 
-You should see lots of warnings about undefined configuration variables.  This meanGood! -- We'll get to that next.
+You should see lots of warnings about undefined configuration variables.  Good! -- We'll get to that next.
 
 ### Configure
 
