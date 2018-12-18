@@ -159,6 +159,7 @@ services:
       END_DATE: ${END_DATE}
       DATADOG_API_KEY: ${DATADOG_API_KEY}
       DATADOG_APP_KEY: ${DATADOG_APP_KEY}
+      COMPETITION_TITLE: ${COMPETITION_TITLE}
     volumes:
       - ./sync-data:/data
     restart: unless-stopped
