@@ -159,7 +159,6 @@ services:
       END_DATE: ${END_DATE}
       DATADOG_API_KEY: ${DATADOG_API_KEY}
       DATADOG_APP_KEY: ${DATADOG_APP_KEY}
-      COMPETITION_TITLE: ${COMPETITION_TITLE}
     volumes:
       - ./sync-data:/data
     restart: unless-stopped
@@ -212,6 +211,7 @@ services:
       START_DATE: ${START_DATE}
       END_DATE: ${END_DATE}
       TIMEZONE: ${TIMEZONE:-America/New_York}
+      COMPETITION_TITLE: ${COMPETITION_TITLE}
     restart: unless-stopped
     logging:
       driver: json-file
