@@ -160,6 +160,7 @@ services:
       END_DATE: ${END_DATE}
       DATADOG_API_KEY: ${DATADOG_API_KEY}
       DATADOG_APP_KEY: ${DATADOG_APP_KEY}
+      TIMEZONE: ${TIMEZONE:-America/New_York}
     volumes:
       - ./sync-data:/data
     restart: unless-stopped
