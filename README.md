@@ -97,7 +97,7 @@ END_DATE=2018-03-20T00:01:00-04:00
 
 # Python Time zone for competition days.
 # See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-TIMEZONE=America/New_Yorkk
+TIMEZONE=America/New_York
 ```
 
 These environment variables will be passed in to the various services that need them
