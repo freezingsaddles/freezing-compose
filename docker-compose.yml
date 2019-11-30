@@ -127,7 +127,7 @@ services:
       - './web/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl'
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.docker_gen"
-    restart: unless-stopped
+    restart: always
     logging:
       driver: json-file
       options:
