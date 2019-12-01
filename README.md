@@ -18,13 +18,13 @@ Start by cloning this repository on your development workstation.
 
 For example:
 
-```
+```shell
 git clone https://github.com/freezingsaddles/freezing-compose
 ```
 
 Now you can confirm that docker-compose is working correctly by changing to that directory and executing `docker-compose` commands.
 
-```
+```shell
 cd freezing-compose
 docker-compose ps
 ```
@@ -34,7 +34,7 @@ You should see lots of warnings about undefined configuration variables. Good! W
 ### 1.2 Configure Environment Variables for `docker-compose` in `.env` file
 
 Copy the `example.env` file to a file named `.env`.  This is where `docker-compose` will look for environment variables.
-```
+```shell
 cp sample-env .env
 # edit the environment
 vi .env
@@ -94,11 +94,11 @@ alias mysql-freezing='docker run -it --rm --network=host mysql:5.6 mysql --host=
 alias mysql-freezing-non-interactive='docker run -i --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-
 alias mysql-freezing-root='docker run -it --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'
 alias mysql-freezing-root-non-interactive='docker run -i --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'set=utf8mb4'
-
 ```
+
 You can put these aliases in your `$HOME/.profile` or `$HOME/.bashrc` files to make them stick.
 
-```
+```shell
 $ mysql-freezing
 Warning: Using a password on the command line interface can be insecure.
 Welcome to the MySQL monitor.  Commands end with ; or \g.
@@ -203,7 +203,7 @@ Now you can start up the `freezing-web` container!
 
 These commands will start it, wait 20 seconds for it to boot, and then tail the logs of the container:
 
-```
+```shell
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d freezing-web
 sleep 20
 docker logs -t freezing-web
@@ -237,7 +237,7 @@ Clone the repository this repository onto a server that runs Docker and `docker-
 
 For example:
 
-```
+```shell
 sudo git clone https://github.com/freezingsaddles/freezing-compose /opt/compose
 # Change ownership back to your regular user so you can update it
 sudo chown -R $(id -u):$(id -g) /opt/compose
@@ -251,7 +251,7 @@ docker volume create --name=freezing-data
 ```
 
 ### 2.3 Configure Environment
-```
+```shell
 # Create and edit the .env file, filling it in completely with real values
 cd /opt/compose
 cp example.env .env
@@ -264,7 +264,7 @@ docker-compose ps
 *Note:* The production configuration assumes you will run a MySQL server outside of the environment managed by `docker-compose`. Please configure an external MySQL server, for example an AWS RDS MySQL server, in the `.env` file for production use.
 
 ### 2.3 Run Containers
-```
+```shell
 cd /opt/compose
 docker-compose up -d
 # wait a minute, then verify that the containers are working
