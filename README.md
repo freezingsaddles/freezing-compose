@@ -219,6 +219,8 @@ If this starts correctly, it will look like:
 [2019-12-01 18:56:59 +0000] [9] [INFO] Worker exiting (pid: 9)
 [2019-12-01 18:57:00 +0000] [11] [INFO] Booting worker with pid: 11
 ```
+If it works, you can visit the local development web site at: http://127.0.0.1:8000/
+
 If it fails, it will have a stack trace that complains about the problem. The first thing to check is the `SQLALCHEMY_URL`, as it tries to connect to the database early in the boot process.
 
 *Note*: if you just want to do website development, it is probably easier to just set up a Python 3 virtual environment instead.
