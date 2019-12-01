@@ -27,6 +27,9 @@ services:
     volumes:
       - freezing-data:/var/lib/mysql
       #- ./docker/db/sql-scripts:/sql
+    # Run mysqld with ideal UTF-8 character set defaults
+    # Thanks Javier Arias & Stack Overflow https://stackoverflow.com/a/50529359
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-fr33z3}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-freezing}
