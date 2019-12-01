@@ -38,6 +38,7 @@ Copy the `example.env` file to a file named `.env`.  This is where `docker-compo
 cp sample-env .env
 # edit the environment
 vi .env
+```
 
 See [sample.env](sample.env) for a complete annotated example of a docker-compose `.env` file.
 
@@ -85,11 +86,17 @@ Version: '5.6.46'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Comm
 
 
 ### 1.3 Connecting to the database
-You can also use Docker to connect to the database. The command required is long and tedious, so create a shell alias for it:
+To connect to the database, you can run a local mysql client if you already have one installed.
+
+You can use Docker to connect to the database. The commands required are long and tedious, so create a shell alias for it. Substitute your values for the password and other configurable settings into the aliases below and run these at a shell prompt:
+```shell
+alias mysql-freezing='docker run -it --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-set=utf8mb4'
+alias mysql-freezing-non-interactive='docker run -i --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-
+alias mysql-freezing-root='docker run -it --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'
+alias mysql-freezing-root-non-interactive='docker run -i --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'set=utf8mb4'
+
 ```
-alias mysql-freezing='docker run -t -i --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-set=utf8mb4'
-mysql-freezing
-```
+You can put these aliases in your `$HOME/.profile` or `$HOME/.bashrc` files to make them stick.
 
 Once connected, you can issue MySQL commands and queries:
 ```
@@ -121,8 +128,8 @@ Using delimiter:	;
 Server version:		5.6.46 MySQL Community Server (GPL)
 Protocol version:	10
 Connection:		127.0.0.1 via TCP/IP
-Server characterset:	latin1
-Db     characterset:	latin1
+Server characterset:	utf8mb4
+Db     characterset:	utf8mb4
 Client characterset:	utf8mb4
 Conn.  characterset:	utf8mb4
 TCP port:		3306
@@ -143,21 +150,21 @@ mysql> show databases;
 mysql> quit
 Bye
 ```
+Due to a quirk of Docker, you will need to use the `mysql-freezing-non-interactive` and `mysql-freezing-root-non-interactive` aliases when you redirect the input of MySQL, such as when loading a database dump.
 
-### 1.4 Loading in Data (optional)
+### 1.4 Optional: Loading a MySQL data dump
+
+This is probably the most convenient way to get started with Freezing Saddles development, but it is optional; if you don't have a dump file, the first time the `freezing-web` container is run it will populate the schema and baseline tables using the Alembic database migration toolkit.
 
 If you have a MySQL dump (e.g. of the production database), you can load it into a fresh database like this:
 ```shell
-$ mysql -h 127.0.0.1 -u root -p freezing < freezing-2019-03-20.dump
+$ mysql-freezing-root-non-interactive < freezing-2019-03-20-fixed.sql
+$ # Or if you have configured the mysql-freezing-root-non-interactive alias:
+$ mysql -h 127.0.0.1 -u root -p freezing < freezing-2019-03-20-fixed.sql
 Enter password: <type in the root password you configured above>
-...
-$ # Or if you have configured the mysql-freezing alias:
-$ mysql-freezing < freezing-2019-03-20.sql
 ```
 
-Note: it is important to specify the `127.0.0.1` host, since otherwise mysql assumes a server listening on a local unix socket. MySQL in the container is only listening on TCP.
-
-If you don't have a dump file, the first time the `freezing-web` container is run it will populate the schema and baseline tables using the South database migration toolkit.
+Note: if you have trouble with using `127.0.0.1` try `localhost`. Different combinations of Docker and host operating systems and MySQL may have quirks that make one or the other fail. MySQL may assume that you are using a server that is listening on a local unix socket, which won't work since  MySQL in the container only has an exposed listener via TCP/IP.
 
 ### 1.5 Recreating the MySQL database
 If you ever want to destroy and recreate your MySQL database, just remove the container and volume and re "up" it:
@@ -169,8 +176,9 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml rm mysql
 docker volume rm freezing-data && \
     docker volume create --name=freezing-data && \
     docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d mysql
+# If you have trouble, you might need to do a `docker rm XXXXXX` where XXXXXX is
+# the ID of a stopped freezing-mysql container, then repeat the above commands.
 ```
-
 
 ### 1.6 Running `freezing-web` and Other Containers via `docker-compose`
 
@@ -185,7 +193,7 @@ The website expects some minimum configuration to be specified, so you may need 
 SECRET_KEY=deadbeef
 
 # For the SA URL, you need to use the user & password you configured for your app db above.
-# The host should be 'mysql.container' which will be resolved by docker to the myslq container's IP address
+# The host should be 'mysql.container' which will be resolved by docker to the MySQL container's IP address
 SQLALCHEMY_URL=mysql+pymysql://freezing:please-change-me-as-this-is-a-default@mysql.container/freezing?charset=utf8mb4&binary_prefix=true
 
 # Some of the website reports expect the start date and end date and teams to be configured.
@@ -194,31 +202,39 @@ SQLALCHEMY_URL=mysql+pymysql://freezing:please-change-me-as-this-is-a-default@my
 
 Now you can start up the `freezing-web` container!
 
+These commands will start it, wait 20 seconds for it to boot, and then tail the logs of the container:
+
 ```
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d freezing-web
+sleep 20
+docker logs -t freezing-web
 ```
+If this starts correctly, it will look like:
 
-Note that if you want to do website development, it's easier to just set up a python virtual environment instead.
+```
+[2019-12-01 18:56:09 +0000] [6] [INFO] Starting gunicorn 19.7.1
+[2019-12-01 18:56:09 +0000] [6] [INFO] Listening at: http://0.0.0.0:8000 (6)
+[2019-12-01 18:56:09 +0000] [6] [INFO] Using worker: sync
+[2019-12-01 18:56:09 +0000] [9] [INFO] Booting worker with pid: 9
+[2019-12-01 18:56:59 +0000] [6] [CRITICAL] WORKER TIMEOUT (pid:9)
+[2019-12-01 18:56:59 +0000] [9] [INFO] Worker exiting (pid: 9)
+[2019-12-01 18:57:00 +0000] [11] [INFO] Booting worker with pid: 11
+```
+If it fails, it will have a stack trace that complains about the problem. The first thing to check is the `SQLALCHEMY_URL`, as it tries to connect to the database early in the boot process.
 
-See the README for [freezing-web](https://github.com/freezingsaddles/freezing-web) for those instructions.
+*Note*: if you just want to do website development, it is probably easier to just set up a Python 3 virtual environment instead.
+
+See the README for [freezing-web](https://github.com/freezingsaddles/freezing-web) for those instructions.  
 
 ## 2. Deploy to Production
 
-This repository can be used to deploy the Freezing Saddles application for production.  Before you get started, we assume you
-have already installed [Docker](http://docker.com) and [Docker Compose](https://docs.docker.com/compose/).
+This repository can be used to deploy the Freezing Saddles application for production.  Before you get started, we assume you have already installed [Docker](http://docker.com) and [Docker Compose](https://docs.docker.com/compose/).
 
-
-```shell
-# If you have not already, you first need to create these named volumes:
-docker volume create --name=freezing-data
-docker volume create --name=beanstalkd-data
-```
-
-```
+The current production setup assumes that you will use an external MySQL server, but [future work is contemplated to support running MySQL as a Docker container in production](https://github.com/freezingsaddles/freezing-compose/issues/9).
 
 ### 2.1 Clone Repository
 
-Clone the repository this repository onto a server that runs Docker and `docker-compose`. [freezingsaddles.org](https://freezingsaddles.org/] has run on CoreOS since 2018 but works but any operating system distribution that has Docker support will probably do.
+Clone the repository this repository onto a server that runs Docker and `docker-compose`. [freezingsaddles.org](https://freezingsaddles.org/) has run on CoreOS since 2018 but works but any modern operating system distribution that has Docker support will probably work. That includes CentOS 7 and 8, Ubuntu 16.04 and 18.04, and many others.
 
 For example:
 
@@ -228,7 +244,14 @@ sudo git clone https://github.com/freezingsaddles/freezing-compose /opt/compose
 sudo chown -R $(id -u):$(id -g) /opt/compose
 ```
 
-### 2.2 Configure Environment
+### 2.2 Create Persistent Docker Volumes
+
+Create the persistent volume for beanstalkd-data:
+```shell
+docker volume create --name=freezing-data
+```
+
+### 2.3 Configure Environment
 ```
 # Create and edit the .env file, filling it in completely with real values
 cd /opt/compose
@@ -238,6 +261,8 @@ vi .env
 # Verify Docker compose is working
 docker-compose ps
 ```
+
+*Note:* The production configuration assumes you will run a MySQL server outside of the environment managed by `docker-compose`. Please configure an external MySQL server, for example an AWS RDS MySQL server, in the `.env` file for production use.
 
 ### 2.3 Run Containers
 ```
