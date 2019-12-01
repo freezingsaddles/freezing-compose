@@ -98,7 +98,6 @@ alias mysql-freezing-root-non-interactive='docker run -i --rm --network=host mys
 ```
 You can put these aliases in your `$HOME/.profile` or `$HOME/.bashrc` files to make them stick.
 
-Once connected, you can issue MySQL commands and queries:
 ```
 $ mysql-freezing
 Warning: Using a password on the command line interface can be insecure.
