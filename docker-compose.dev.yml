@@ -6,19 +6,29 @@ volumes:
 
 services:
 
-  freezing-web:
-    ports:
-      - 8000:8000
-    links:
-      - beanstalkd:beanstalkd.container
-      - mysql:mysql.container
+  #### Stock containers
+  
+  datadog:
+    restart: unless-stopped
 
-  freezing-sync:
-    links:
-      - beanstalkd:beanstalkd.container
-      - mysql:mysql.container
+  logspout:
+    restart: unless-stopped
 
+  beanstalkd:
+    restart: unless-stopped
+
+  nginx:
+    restart: unless-stopped
+
+  nginx-letsencrypt:
+    restart: unless-stopped
+
+  nginx-docker-gen:
+    restart: unless-stopped
+
+  # Database used for local development
   mysql:
+    restart: unless-stopped
     image: mysql:5.6
     container_name: freezing-mysql
     hostname: freezing-mysql
@@ -26,12 +36,31 @@ services:
       - "3306:3306"
     volumes:
       - freezing-data:/var/lib/mysql
-      #- ./docker/db/sql-scripts:/sql
     # Run mysqld with ideal UTF-8 character set defaults
     # Thanks Javier Arias & Stack Overflow https://stackoverflow.com/a/50529359
     command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-fr33z3}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-terrible-root-password-which-should-be-changed}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-freezing}
       MYSQL_USER: ${MYSQL_USER:-freezing}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-zeer0}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-please-change-me-as-this-is-a-default}
+      
+  #### Freezing Saddles containers
+
+  freezing-sync:
+    image: ${FREEZING_SYNC_IMAGE:-freezingsaddles/freezing-nq:latest}
+    restart: unless-stopped
+
+  freezing-nq:
+    image: ${FREEZING_NQ_IMAGE:-freezingsaddles/freezing-nq:latest}
+    restart: unless-stopped
+
+  freezing-web:
+    image: ${FREEZING_WEB_IMAGE:-freezingsaddles/freezing-web:latest}
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+    links:
+      - beanstalkd:beanstalkd.container
+      - mysql:mysql.container
+

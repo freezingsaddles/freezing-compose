@@ -86,7 +86,7 @@ services:
       - 'nginx-webroot:/usr/share/nginx/html'
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
-    restart: always
+    restart: unless-stopped
     logging:
       driver: json-file
       options:
@@ -127,7 +127,7 @@ services:
       - './web/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl'
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.docker_gen"
-    restart: always
+    restart: unless-stopped
     logging:
       driver: json-file
       options:
@@ -192,7 +192,8 @@ services:
         max-size: 10m
 
   freezing-web:
-    image: freezingsaddles/freezing-web:latest
+    image: local/freezing-web:latest
+    #image: freezingsaddles/freezing-web:latest
     hostname: freezing-web
     container_name: freezing-web
     links:
