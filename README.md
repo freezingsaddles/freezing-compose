@@ -2,8 +2,13 @@
 
 This project is for deploying the Freezing Saddles application for either development or production.
 
-Before you get started, we assume you have already installed [Docker](https://docker.com) and [Docker Compose](https://docs.docker.com/compose/).
+Before you get started, we assume you have already installed [Docker](https://docker.com) and [Docker Compose](https://docs.docker.com/compose/). Older versions of Docker may not work properly, as they may not support some features this uses, such as buildsteps. This has been tested with these versions:
 
+* Docker version 18.06.3-ce, build d7080c1, on Container Linux by CoreOS stable (2303.3.0)
+* Docker version 19.03.5, build 633a0ea, on macOS High Sierra 10.13.6 (17G9016)
+* Docker version 19.03.5, build 633a0ea, on CentOS Linux release 7.7.1908 (Core)
+
+It definitely will not work with the Docker 1.13 that ships with CentOS 7, for example. If you want to use this with CentOS 7, please follow the [Docker Engine CE instructions from the vendor](https://docs.docker.com/install/linux/docker-ce/centos/).
 
 ## 1. Development
 
@@ -11,6 +16,12 @@ You can use the `docker-compose.dev.yml` file, in conjunction with the main `doc
 to spin up services that might be needed during development, but not production.
 
 The `docker-compose.yml` file does not define a service for the database, but the `docker-compose.dev.yml` file does.
+
+To make it easier to deal with both of these files at once, please create an alias in your shell:
+```shell
+alias docker-compose-dev='docker-compose -f docker-compose.yml -f docker-compose.dev.yml'
+```
+Add this to your `$HOME/.profile` or `$HOME/.bash_profile` to make it permanent.
 
 ### 1.1 Clone Repository
 
@@ -61,6 +72,7 @@ vi .env
 
 # If you have not already, you first need to create these named volumes:
 docker volume create --name=freezing-data
+docker volume create --name=beanstalkd-data
 
 # Then you can start MySQL container
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d mysql
@@ -262,12 +274,31 @@ sudo chown -R $(id -u):$(id -g) /opt/compose
 
 ### 2.2 Create Persistent Docker Volumes
 
-Create the persistent volume for beanstalkd-data:
+Create the persistent volumes needed for production:
 ```shell
 docker volume create --name=freezing-data
+docker volume create --name=beanstalkd-data
 ```
 
-### 2.3 Configure Environment
+### 2.3 Configure MySQL production server
+
+*Note:* The production configuration assumes you will run a MySQL server outside of the environment managed by `docker-compose`. Please configure an external MySQL server, for example an AWS RDS MySQL server, in the `.env` file for production use.
+
+Connect to your production database as the root user and issue these commands to create the database, putting in a real password instead of the one below:
+```sql
+drop database if exists freezing;
+create database freezing character set utf8mb4;
+create user freezing identified by 'please-change-me-as-this-is-a-default';
+grant all on freezing.* to freezing;
+```
+Adapt the shell aliases in section 1.3 above so that they connect to the production database from your production host.
+
+If you set up the shell aliases suggested above (test them by issuing a `mysql` command), you should be able to load a snapshot of the production database with:
+```shell
+mysql-non-interactive < freezing-2019-12-31.sql
+```
+
+### 2.4 Configure Environment
 ```shell
 # Create and edit the .env file, filling it in completely with real values
 cd /opt/compose
@@ -278,9 +309,7 @@ vi .env
 docker-compose ps
 ```
 
-*Note:* The production configuration assumes you will run a MySQL server outside of the environment managed by `docker-compose`. Please configure an external MySQL server, for example an AWS RDS MySQL server, in the `.env` file for production use.
-
-### 2.3 Run Containers
+### 2.5 Run Containers
 ```shell
 cd /opt/compose
 docker-compose up -d
