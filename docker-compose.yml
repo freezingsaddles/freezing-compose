@@ -86,7 +86,7 @@ services:
       - 'nginx-webroot:/usr/share/nginx/html'
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
-    restart: always
+    restart: unless-stopped
     logging:
       driver: json-file
       options:
@@ -127,7 +127,7 @@ services:
       - './web/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl'
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.docker_gen"
-    restart: always
+    restart: unless-stopped
     logging:
       driver: json-file
       options:
@@ -146,6 +146,7 @@ services:
       - beanstalkd:beanstalkd.container
       - datadog:datadog.container
     environment:
+      ENVIRONMENT: ${ENVIRONMENT}
       DEBUG: ${DEBUG}
       BEANSTALKD_HOST: beanstalkd.container
       BEANSTALKD_PORT: 11300
@@ -177,6 +178,7 @@ services:
     links:
       - beanstalkd:beanstalkd.container
     environment:
+      ENVIRONMENT: ${ENVIRONMENT}
       VIRTUAL_HOST: ${FREEZING_NQ_FQDN}
       LETSENCRYPT_HOST: ${FREEZING_NQ_FQDN}
       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
@@ -192,12 +194,14 @@ services:
         max-size: 10m
 
   freezing-web:
-    image: freezingsaddles/freezing-web:latest
+    image: local/freezing-web:latest
+    #image: freezingsaddles/freezing-web:latest
     hostname: freezing-web
     container_name: freezing-web
     links:
       - beanstalkd:beanstalkd.container
     environment:
+      ENVIRONMENT: ${ENVIRONMENT}
       VIRTUAL_HOST: ${FREEZING_WEB_FQDN}
       LETSENCRYPT_HOST: ${FREEZING_WEB_FQDN}
       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}

@@ -10,6 +10,8 @@ Before you get started, we assume you have already installed [Docker](https://do
 You can use the `docker-compose.dev.yml` file, in conjunction with the main `docker-compose.yml` file,
 to spin up services that might be needed during development, but not production.
 
+*Note*: The commands that follow assume that you are running on a system running a command processor in the [Bourne shell](https://en. wikipedia.org/wiki/Bourne_shell) family such as `bash` or `zsh`, found in Linux and UNIX operating systems (Ubuntu or macOS, for example). If your system does not include bash by default (such as Windows), you can probably adapt the commands to work, or run them  through the [msys2](https://www.msys2.org/) packages or [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10), though [hacks will be required for running WSL and docker together](https://nickjanetakis.com/blog/setting-up-docker-for-windows-and-wsl-to-work-flawlessly).
+
 The `docker-compose.yml` file does not define a service for the database, but the `docker-compose.dev.yml` file does.
 
 ### 1.1 Clone Repository
@@ -91,7 +93,7 @@ To connect to the database, you can run a local mysql client if you already have
 You can use Docker to connect to the database. The commands required are long and tedious, so create a shell alias for it. Substitute your values for the password and other configurable settings into the aliases below and run these at a shell prompt:
 ```shell
 alias mysql-freezing='docker run -it --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-set=utf8mb4'
-alias mysql-freezing-non-interactive='docker run -i --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-
+alias mysql-freezing-non-interactive='docker run -i --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-set=utf8mb4'
 alias mysql-freezing-root='docker run -it --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'
 alias mysql-freezing-root-non-interactive='docker run -i --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'set=utf8mb4'
 ```
@@ -241,6 +243,64 @@ If it fails, it will have a stack trace that complains about the problem. The fi
 *Note*: if you just want to do website development, it is probably easier to just set up a Python 3 virtual environment on your host instead.
 
 See the README for [freezing-web](https://github.com/freezingsaddles/freezing-web) for those instructions.  
+
+### 1.7 Using a local container instead of a repository-pulled container
+
+In order to test a locally created container in Docker before pushing it up to the repository, follow this procedure:
+
+```shell
+# Build the docker image in the freezing-web or other project
+cd ../freezing-web
+docker build . -t local/freezing-web
+cd ../freezing-compose
+export FREEZING_WEB_IMAGE=local/freezing-web:latest
+docker-compose-dev up -d freezing-web
+```
+
+Here is a terminal session showing the before and after or switching the image to a local one:
+```
+[freezing-compose (master)]$ docker-compose-dev up -d
+Creating network "freezing-compose_default" with the default driver
+Creating freezing-mysql    ... done
+Creating beanstalkd        ... done
+Creating nginx-letsencrypt ... done
+Creating nginx-docker-gen  ... done
+Creating logspout          ... done
+Creating nginx             ... done
+Creating dd-agent          ... done
+Creating freezing-sync     ... done
+Creating freezing-web      ... done
+Creating freezing-nq       ... done
+[freezing-compose (master)]$ docker ps
+CONTAINER ID        IMAGE                                    COMMAND                  CREATED              STATUS                                 PORTS                                      NAMES
+0a222643de63        freezingsaddles/freezing-web:latest      "/bin/sh -c 'gunicor…"   About a minute ago   Up 59 seconds                          0.0.0.0:8000->8000/tcp                     freezing-web
+e1dda065040b        freezingsaddles/freezing-nq:latest       "/bin/sh -c 'gunicor…"   About a minute ago   Up 59 seconds                          8000/tcp                                   freezing-sync
+d80a268e405b        freezingsaddles/freezing-nq:latest       "/bin/sh -c 'gunicor…"   About a minute ago   Up About a minute                      8000/tcp                                   freezing-nq
+23cb4024f0d2        nginx:stable                             "nginx -g 'daemon of…"   About a minute ago   Up About a minute                      0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp   nginx
+1fe08132af7f        freezing-compose_beanstalkd              "beanstalkd -p 11300…"   About a minute ago   Up About a minute                      11300/tcp                                  beanstalkd
+13e6427fb5c4        gliderlabs/logspout                      "/bin/logspout syslo…"   About a minute ago   Restarting (1) 13 seconds ago                                                     logspout
+d6b5cdc8d640        datadog/docker-dd-agent:latest           "/entrypoint.sh supe…"   About a minute ago   Up About a minute (health: starting)   8125/udp, 8126/tcp                         dd-agent
+a3a1b3b3e9cd        jwilder/docker-gen                       "/usr/local/bin/dock…"   About a minute ago   Up About a minute                                                                 nginx-docker-gen
+84fc1f85a1ee        jrcs/letsencrypt-nginx-proxy-companion   "/bin/bash /app/entr…"   About a minute ago   Up 59 seconds                                                                     nginx-letsencrypt
+39f7700118fb        mysql:5.6                                "docker-entrypoint.s…"   About a minute ago   Up About a minute                      0.0.0.0:3306->3306/tcp                     freezing-mysql
+[freezing-compose (master)]$ export FREEZING_WEB_IMAGE=local/freezing-web:latest
+[freezing-compose (master)]$ docker-compose-dev up -d
+nginx-letsencrypt is up-to-date
+logspout is up-to-date
+nginx is up-to-date
+nginx-docker-gen is up-to-date
+freezing-mysql is up-to-date
+beanstalkd is up-to-date
+dd-agent is up-to-date
+Recreating freezing-web ...
+freezing-nq is up-to-date
+Recreating freezing-web ... done
+[freezing-compose (master)]$ docker ps | grep freezing-web
+eb2c13a109ba        local/freezing-web:latest                "/bin/sh -c 'gunicor…"   15 seconds ago      Up 13 seconds                     0.0.0.0:8000->8000/tcp                     freezing-web
+[freezing-compose (master)]$
+```
+
+By using these techniques you can test locally in a fashion that is very similar to production.
 
 ## 2. Deploy to Production
 
