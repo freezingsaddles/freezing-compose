@@ -194,8 +194,7 @@ services:
         max-size: 10m
 
   freezing-web:
-    image: local/freezing-web:latest
-    #image: freezingsaddles/freezing-web:latest
+    image: freezingsaddles/freezing-web:latest
     hostname: freezing-web
     container_name: freezing-web
     links:
