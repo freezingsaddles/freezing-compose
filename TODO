@@ -1,3 +1,0 @@
-- Add the currently-functional freezing-nq and beanstalkd containers
-- Add and configure loggly sidecar container
-- Add letsencrypt for freezing-nq web interface
