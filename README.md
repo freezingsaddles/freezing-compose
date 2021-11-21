@@ -73,8 +73,11 @@ start up MySQL using `docker-compose`, follow these steps:
 vi .env
 
 # If you have not already, you first need to create these named volumes:
+
+```
 docker volume create --name=freezing-data
 docker volume create --name=beanstalkd-data
+```
 
 # Then you can start MySQL container
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d mysql
@@ -338,6 +341,7 @@ Create the persistent volumes needed for production:
 ```shell
 docker volume create --name=freezing-data
 docker volume create --name=beanstalkd-data
+docker volume create --name=wordpress-data
 ```
 
 ### 2.3 Configure MySQL production server

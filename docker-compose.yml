@@ -5,6 +5,8 @@ volumes:
     external: true
   beanstalkd-data:
     external: true
+  wordpress-data:
+    external: true
   nginx-config:
   nginx-certs:
   nginx-vhosts:
@@ -218,6 +220,26 @@ services:
       END_DATE: ${END_DATE}
       TIMEZONE: ${TIMEZONE:-America/New_York}
       COMPETITION_TITLE: ${COMPETITION_TITLE}
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-file: "2"
+        max-size: 10m
+  register:
+    image: wordpress:5.8.2
+    container_name: wordpress
+    volumes:
+      - wordpress-data:/var/www/html
+    restart: always
+    environment:
+      VIRTUAL_HOST: ${FREEZING_REGISTER_FQDN}
+      LETSENCRYPT_HOST: ${FREEZING_REGISTER_FQDN}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
     restart: unless-stopped
     logging:
       driver: json-file
