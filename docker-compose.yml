@@ -5,8 +5,6 @@ volumes:
     external: true
   beanstalkd-data:
     external: true
-  wordpress-data:
-    external: true
   nginx-config:
   nginx-certs:
   nginx-vhosts:
@@ -226,11 +224,11 @@ services:
       options:
         max-file: "2"
         max-size: 10m
-  register:
+  wordpress:
     image: wordpress:5.8.2
     container_name: wordpress
     volumes:
-      - wordpress-data:/var/www/html
+      - ./wordpress:/var/www/html
     restart: always
     environment:
       VIRTUAL_HOST: ${FREEZING_REGISTER_FQDN}
