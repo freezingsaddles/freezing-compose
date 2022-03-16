@@ -42,14 +42,12 @@ services:
         max-size: 10m
 
   logspout:
-    image: gliderlabs/logspout
+    image: mdsol/logspout
     hostname: logspout
     container_name: logspout
     command: "${SYSLOG_ENDPOINT}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    # environment:
-    #   SYSLOG_STRUCTURED_DATA: ${SYSLOG_STRUCTURED_DATA}
     restart: unless-stopped
     logging:
       driver: json-file
@@ -61,8 +59,6 @@ services:
     build: ./docker-beanstalkd
     hostname: beanstalkd
     container_name: beanstalkd
-    # ports:
-    #   - "11300:11300"
     volumes:
       - beanstalkd-data:/data
     restart: unless-stopped
