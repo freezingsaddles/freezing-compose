@@ -15,7 +15,7 @@ It definitely will not work with the Docker 1.13 that ships with CentOS 7, for e
 You can use the `docker-compose.dev.yml` file, in conjunction with the main `docker-compose.yml` file,
 to spin up services that might be needed during development, but not production.
 
-*Note*: The commands that follow assume that you are running on a system running a command processor in the [Bourne shell](https://en. wikipedia.org/wiki/Bourne_shell) family such as `bash` or `zsh`, found in Linux and UNIX operating systems (Ubuntu or macOS, for example). If your system does not include bash by default (such as Windows), you can probably adapt the commands to work, or run them  through the [msys2](https://www.msys2.org/) packages or [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10), though [hacks will be required for running WSL and docker together](https://nickjanetakis.com/blog/setting-up-docker-for-windows-and-wsl-to-work-flawlessly).
+*Note*: The commands that follow assume that you are running on a system running a command processor in the [Bourne shell] (https://en.wikipedia.org/wiki/Bourne_shell) family such as `bash` or `zsh`, found in Linux and UNIX operating systems (Ubuntu or macOS, for example). If your system does not include bash by default (such as Windows), you can probably adapt the commands to work, or run them  through the [msys2](https://www.msys2.org/) packages or [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10), though [hacks will be required for running WSL and docker together](https://nickjanetakis.com/blog/setting-up-docker-for-windows-and-wsl-to-work-flawlessly).
 
 The `docker-compose.yml` file does not define a service for the database, but the `docker-compose.dev.yml` file does.
 
