@@ -110,7 +110,7 @@ You can use Docker to connect to the database. The commands required are long an
 alias mysql-freezing='docker run -it --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-set=utf8mb4'
 alias mysql-freezing-non-interactive='docker run -i --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-set=utf8mb4'
 alias mysql-freezing-root='docker run -it --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'
-alias mysql-freezing-root-non-interactive='docker run -i --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'set=utf8mb4'
+alias mysql-freezing-root-non-interactive='docker run -i --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'
 ```
 
 You can put these aliases in your `$HOME/.profile` or `$HOME/.bashrc` files to make them stick.
