@@ -102,27 +102,30 @@ Version: '5.6.46'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Comm
 ```
 
 
-### 1.3 Connecting to the database
+### 1.3.1 Connecting to the database
 To connect to the database, you can run a local mysql client if you already have one installed.
 
 You can use Docker to connect to the database. The commands required are long and tedious, so create a shell alias for it. Substitute your values for the password and other configurable settings into the aliases below and run these at a shell prompt:
 ```shell
-alias mysql-freezing='docker run -it --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-set=utf8mb4'
-alias mysql-freezing-non-interactive='docker run -i --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-set=utf8mb4'
-alias mysql-freezing-root='docker run -it --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'
-alias mysql-freezing-root-non-interactive='docker run -i --rm --network=host mysql:5.6 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'
+alias mysql-freezing='docker run -it --rm --network=host mysql:5.7 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-set=utf8mb4'
+alias mysql-freezing-non-interactive='docker run -i --rm --network=host mysql:5.7 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-set=utf8mb4'
+alias mysql-freezing-root='docker run -it --rm --network=host mysql:5.7 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'
+alias mysql-freezing-root-non-interactive='docker run -i --rm --network=host mysql:5.7 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'
 ```
 
 You can put these aliases in your `$HOME/.profile` or `$HOME/.bashrc` files to make them stick.
 
 ```shell
-$ mysql-freezing
-Warning: Using a password on the command line interface can be insecure.
-Welcome to the MySQL monitor.  Commands end with ; or \g.
-Your MySQL connection id is 6
-Server version: 5.6.46 MySQL Community Server (GPL)
+ $  mysql-freezing
+mysql: [Warning] Using a password on the command line interface can be insecure.
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
 
-Copyright (c) 2000, 2019, Oracle and/or its affiliates. All rights reserved.
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 4
+Server version: 5.7.41 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2023, Oracle and/or its affiliates.
 
 Oracle is a registered trademark of Oracle Corporation and/or its
 affiliates. Other names may be trademarks of their respective
@@ -132,16 +135,16 @@ Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
 mysql> status
 --------------
-mysql  Ver 14.14 Distrib 5.6.46, for Linux (x86_64) using  EditLine wrapper
+mysql  Ver 14.14 Distrib 5.7.41, for Linux (x86_64) using  EditLine wrapper
 
-Connection id:		6
+Connection id:		4
 Current database:	freezing
-Current user:		freezing@172.19.0.1
-SSL:			Not in use
+Current user:		freezing@172.18.0.1
+SSL:			Cipher in use is DHE-RSA-AES128-GCM-SHA256
 Current pager:		stdout
 Using outfile:		''
 Using delimiter:	;
-Server version:		5.6.46 MySQL Community Server (GPL)
+Server version:		5.7.41 MySQL Community Server (GPL)
 Protocol version:	10
 Connection:		127.0.0.1 via TCP/IP
 Server characterset:	utf8mb4
@@ -149,9 +152,9 @@ Db     characterset:	utf8mb4
 Client characterset:	utf8mb4
 Conn.  characterset:	utf8mb4
 TCP port:		3306
-Uptime:			7 min 55 sec
+Uptime:			1 hour 48 min 0 sec
 
-Threads: 1  Questions: 7  Slow queries: 0  Opens: 67  Flush tables: 1  Open tables: 60  Queries per second avg: 0.014
+Threads: 1  Questions: 80  Slow queries: 0  Opens: 146  Flush tables: 1  Open tables: 139  Queries per second avg: 0.012
 --------------
 
 mysql> show databases;
@@ -161,9 +164,9 @@ mysql> show databases;
 | information_schema |
 | freezing           |
 +--------------------+
-2 rows in set (0.01 sec)
+2 rows in set (0.00 sec)
 
-mysql> quit
+mysql> quit;
 Bye
 ```
 Due to a quirk of Docker, you will need to use the `mysql-freezing-non-interactive` and `mysql-freezing-root-non-interactive` aliases when you redirect the input of MySQL, such as when loading a database dump.
@@ -181,6 +184,20 @@ Enter password: <type in the root password you configured above>
 ```
 
 Note: if you have trouble with using `127.0.0.1` try `localhost`. Different combinations of Docker and host operating systems and MySQL may have quirks that make one or the other fail. MySQL may assume that you are using a server that is listening on a local unix socket, which won't work since  MySQL in the container only has an exposed listener via TCP/IP.
+
+### 1.4.1 Optional: Upgrading MySQL
+Previously, `docker-compose.dev.yml` used MySQL 5.6, but [we upgraded to MySQL 5.7](https://github.com/freezingsaddles/freezing-compose/issues/23) in 2022. If you have a volume with a MySQL 5.6 database on your development system, you can upgrade it with these commands:
+
+```
+docker-compose-dev stop mysql
+docker-compose-dev up -d mysql
+sleep 10 # wait for mysql to come up
+docker-compose-dev exec mysql mysql_upgrade -p"$(grep MYSQL_ROOT_PASSWORD .env | cut -d= -f2)"
+docker-compose-dev stop mysql
+docker-compose-dev up -d mysql
+```
+
+This will complete the upgrade to MySQL 5.7. 
 
 ### 1.5 Recreating the MySQL database
 If you ever want to destroy and recreate your MySQL database, just remove the container and volume and re "up" it:
