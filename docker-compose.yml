@@ -225,7 +225,7 @@ services:
     container_name: wordpress
     volumes:
       - ./wordpress:/var/www/html
-    restart: always
+    restart: unless-stopped
     environment:
       VIRTUAL_HOST: ${FREEZING_REGISTER_FQDN}
       LETSENCRYPT_HOST: ${FREEZING_REGISTER_FQDN}
@@ -234,7 +234,6 @@ services:
       WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
       WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
       WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
-    restart: unless-stopped
     logging:
       driver: json-file
       options:
