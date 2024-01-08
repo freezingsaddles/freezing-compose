@@ -48,7 +48,7 @@ services:
   #### Freezing Saddles containers
 
   freezing-sync:
-    image: ${FREEZING_SYNC_IMAGE:-freezingsaddles/freezing-nq:latest}
+    image: ${FREEZING_SYNC_IMAGE:-freezingsaddles/freezing-sync:latest}
     restart: unless-stopped
 
   freezing-nq:
