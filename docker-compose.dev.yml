@@ -48,8 +48,11 @@ services:
   #### Freezing Saddles containers
 
   freezing-sync:
-    image: ${FREEZING_SYNC_IMAGE:-freezingsaddles/freezing-nq:latest}
+    image: ${FREEZING_SYNC_IMAGE:-freezingsaddles/freezing-sync:latest}
     restart: unless-stopped
+    links:
+      - beanstalkd:beanstalkd.container
+      - mysql:mysql.container
 
   freezing-nq:
     image: ${FREEZING_NQ_IMAGE:-freezingsaddles/freezing-nq:latest}
