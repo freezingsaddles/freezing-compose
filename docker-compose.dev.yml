@@ -8,7 +8,7 @@ volumes:
 services:
 
   #### Stock containers
-  
+
   datadog:
     restart: unless-stopped
 
@@ -39,13 +39,13 @@ services:
       - freezing-data:/var/lib/mysql
     # Run mysqld with ideal UTF-8 character set defaults
     # Thanks Javier Arias & Stack Overflow https://stackoverflow.com/a/50529359
-    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']  # yamllint disable-line rule:line-length
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-terrible-root-password-which-should-be-changed}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-terrible-root-password-which-should-be-changed}  # yamllint disable-line rule:line-length
       MYSQL_DATABASE: ${MYSQL_DATABASE:-freezing}
       MYSQL_USER: ${MYSQL_USER:-freezing}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-please-change-me-as-this-is-a-default}
-      
+
   #### Freezing Saddles containers
 
   freezing-sync:
@@ -67,4 +67,3 @@ services:
     links:
       - beanstalkd:beanstalkd.container
       - mysql:mysql.container
-
