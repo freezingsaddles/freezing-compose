@@ -90,7 +90,9 @@ services:
         max-size: 10m
 
   nginx-letsencrypt:
-    image: jrcs/letsencrypt-nginx-proxy-companion
+    # Version 2.3 is the last compatible version, 
+    # sha256:04b98015574addfba886023892f5e0ed28c012e1e72b8b43079e006f7e2c54d0 specifically.
+    image: jrcs/letsencrypt-nginx-proxy-companion:2.3
     container_name: nginx-letsencrypt
     hostname: nginx-letsencrypt
     # We don't need the environment since we're using labels.
@@ -190,7 +192,8 @@ services:
         max-size: 10m
 
   freezing-web:
-    image: freezingsaddles/freezing-web:latest
+    #image: freezingsaddles/freezing-web:latest
+    image: freezingsaddles/freezing-web:latest-actions-build
     hostname: freezing-web
     container_name: freezing-web
     links:
