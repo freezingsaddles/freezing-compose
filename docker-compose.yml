@@ -137,7 +137,7 @@ services:
   # ----------------------------------------------------------------------------
 
   freezing-sync:
-    image: freezingsaddles/freezing-sync:latest
+    image: freezingsaddles/freezing-sync:${FREEZING_SYNC_TAG:-latest}
     hostname: freezing-sync
     container_name: freezing-sync
     links:
@@ -192,8 +192,7 @@ services:
         max-size: 10m
 
   freezing-web:
-    #image: freezingsaddles/freezing-web:latest
-    image: freezingsaddles/freezing-web:latest-actions-build
+    image: freezingsaddles/freezing-web:${FREEZING_WEB_TAG:-latest}
     hostname: freezing-web
     container_name: freezing-web
     links:
