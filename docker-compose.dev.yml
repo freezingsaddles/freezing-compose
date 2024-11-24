@@ -92,4 +92,3 @@ services:
       END_DATE: ${END_DATE}
       TIMEZONE: ${TIMEZONE:-America/New_York}
       COMPETITION_TITLE: ${COMPETITION_TITLE}
-
