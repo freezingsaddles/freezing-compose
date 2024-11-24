@@ -7,8 +7,10 @@ Before you get started, we assume you have already installed [Docker](https://do
 * Docker version 18.06.3-ce, build d7080c1, on Container Linux by CoreOS stable (2303.3.0)
 * Docker version 19.03.5, build 633a0ea, on macOS High Sierra 10.13.6 (17G9016)
 * Docker version 19.03.5, build 633a0ea, on CentOS Linux release 7.7.1908 (Core)
+* Docker version 24.0.6, build ed223bc, on macOS Sequoia 15.1.1 (24B91)
+* Docker version 26.1.3, build b72abbb, on Rocky Linux release 8.10 (Green Obsidian)
 
-It definitely will not work with the Docker 1.13 that ships with CentOS 7, for example. If you want to use this with CentOS 7, please follow the [Docker Engine CE instructions from the vendor](https://docs.docker.com/install/linux/docker-ce/centos/).
+It **definitely** will not work with the Docker 1.13 that ships with CentOS 7, for example. If you want to use this with CentOS or another Red Hat Enterprise Linux compatible system, please follow the [Docker Engine CE instructions from the vendor](https://docs.docker.com/install/linux/docker-ce/centos/).
 
 ## 1. Development
 
