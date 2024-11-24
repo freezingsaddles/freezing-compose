@@ -142,14 +142,14 @@ services:
     image: freezingsaddles/freezing-sync:${FREEZING_SYNC_TAG:-latest}
     hostname: freezing-sync
     container_name: freezing-sync
-    links:
-      - beanstalkd:beanstalkd.container
-      - datadog:datadog.container
+    depends_on:
+      - beanstalkd
+      - datadog
     environment:
       ENVIRONMENT: ${ENVIRONMENT}
       DEBUG: ${DEBUG}
-      BEANSTALKD_HOST: beanstalkd.container
-      BEANSTALKD_PORT: 11300
+      BEANSTALKD_HOST: ${BEANSTALKD_HOST:-beanstalkd}
+      BEANSTALKD_PORT: ${BEANSTALKD_PORT:-11300}
       SQLALCHEMY_URL: ${SQLALCHEMY_URL}
       STRAVA_CLIENT_ID: ${STRAVA_CLIENT_ID}
       STRAVA_CLIENT_SECRET: ${STRAVA_CLIENT_SECRET}
@@ -159,6 +159,8 @@ services:
       MAIN_TEAM: ${MAIN_TEAM}
       START_DATE: ${START_DATE}
       END_DATE: ${END_DATE}
+      DATADOG_HOST: ${DATADOG_HOST:-datadog}
+      DATADOG_PORT: ${DATADOG_PORT:-8125}
       DATADOG_API_KEY: ${DATADOG_API_KEY}
       DATADOG_APP_KEY: ${DATADOG_APP_KEY}
       TIMEZONE: ${TIMEZONE:-America/New_York}
@@ -175,16 +177,14 @@ services:
     image: freezingsaddles/freezing-nq:latest
     hostname: freezing-nq
     container_name: freezing-nq
-    links:
-      - beanstalkd:beanstalkd.container
     environment:
       ENVIRONMENT: ${ENVIRONMENT}
       VIRTUAL_HOST: ${FREEZING_NQ_FQDN}
       LETSENCRYPT_HOST: ${FREEZING_NQ_FQDN}
       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
       DEBUG: ${DEBUG}
-      BEANSTALKD_HOST: beanstalkd.container
-      BEANSTALKD_PORT: 11300
+      BEANSTALKD_HOST: ${BEANSTALKD_HOST:-beanstalkd}
+      BEANSTALKD_PORT: ${BEANSTALKD_PORT:-11300}
       STRAVA_VERIFY_TOKEN: ${STRAVA_VERIFY_TOKEN}
     restart: unless-stopped
     logging:
@@ -192,13 +192,15 @@ services:
       options:
         max-file: "2"
         max-size: 10m
+    depends_on:
+      - beanstalkd
 
   freezing-web:
     image: freezingsaddles/freezing-web:${FREEZING_WEB_TAG:-latest}
     hostname: freezing-web
     container_name: freezing-web
-    links:
-      - beanstalkd:beanstalkd.container
+    depends_on:
+      - beanstalkd
     environment:
       ENVIRONMENT: ${ENVIRONMENT}
       VIRTUAL_HOST: ${FREEZING_WEB_FQDN}
@@ -222,6 +224,7 @@ services:
       options:
         max-file: "2"
         max-size: 10m
+
   wordpress:
     image: wordpress:5.8.2
     container_name: wordpress
