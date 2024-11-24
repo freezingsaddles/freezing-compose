@@ -32,7 +32,6 @@ services:
     restart: unless-stopped
     image: mysql:5.7
     container_name: freezing-mysql
-    hostname: freezing-mysql
     ports:
       - "3306:3306"
     volumes:
@@ -41,6 +40,8 @@ services:
     # Thanks Javier Arias & Stack Overflow https://stackoverflow.com/a/50529359
     command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']  # yamllint disable-line rule:line-length
     environment:
+      MYSQL_HOST: ${MYSQL_HOST:-mysql}
+      MYSQL_PORT: ${MYSQL_PORT:-3306}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-terrible-root-password-which-should-be-changed}  # yamllint disable-line rule:line-length
       MYSQL_DATABASE: ${MYSQL_DATABASE:-freezing}
       MYSQL_USER: ${MYSQL_USER:-freezing}
@@ -69,13 +70,26 @@ services:
   freezing-web:
     image: ${FREEZING_WEB_IMAGE:-freezingsaddles/freezing-web:latest}
     restart: unless-stopped
-    ports:
-      - 8000:8000
-    environment:
-      BEANSTALKD_HOST: ${BEANSTALKD_HOST:-beanstalkd}
-      BEANSTALKD_PORT: ${BEANSTALKD_PORT:-11300}
-      MYSQL_HOST: ${MYSQL_HOST:-mysql}
-      MYSQL_PORT: ${MYSQL_HOST:-3306}
     depends_on:
       - beanstalkd
       - mysql
+    ports:
+      - 8000:8000
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}
+      VIRTUAL_HOST: ${FREEZING_WEB_FQDN}
+      LETSENCRYPT_HOST: ${FREEZING_WEB_FQDN}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
+      SQLALCHEMY_URL: ${SQLALCHEMY_URL}
+      STRAVA_CLIENT_ID: ${STRAVA_CLIENT_ID}
+      STRAVA_CLIENT_SECRET: ${STRAVA_CLIENT_SECRET}
+      TEAMS: ${TEAMS}
+      OBSERVER_TEAMS: ${OBSERVER_TEAMS}
+      MAIN_TEAM: ${MAIN_TEAM}
+      START_DATE: ${START_DATE}
+      END_DATE: ${END_DATE}
+      TIMEZONE: ${TIMEZONE:-America/New_York}
+      COMPETITION_TITLE: ${COMPETITION_TITLE}
+
