@@ -109,11 +109,11 @@ To connect to the database, you can run a local mysql client if you already have
 
 You can use Docker to connect to the database. The commands required are long and tedious, so create a shell alias for it. Substitute your values for the password and other configurable settings into the aliases below and run these at a shell prompt:
 ```shell
-alias mysql-freezing='docker run -it --rm --network=host mysql:5.7 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-set=utf8mb4'
-alias mysql-freezing-non-interactive='docker run -i --rm --network=host mysql:5.7 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-set=utf8mb4'
-alias mysql-freezing-dump='docker run -i --rm --network=host mysql:5.7 mysqldump --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed freezing --default-character-set=utf8mb4'
-alias mysql-freezing-root='docker run -it --rm --network=host mysql:5.7 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'
-alias mysql-freezing-root-non-interactive='docker run -i --rm --network=host mysql:5.7 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'
+alias mysql-freezing='docker run -it --rm --network=host mysql:8.0 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-set=utf8mb4'
+alias mysql-freezing-non-interactive='docker run -i --rm --network=host mysql:8.0 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-set=utf8mb4'
+alias mysql-freezing-dump='docker run -i --rm --network=host mysql:8.0 mysqldump --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed freezing --default-character-set=utf8mb4'
+alias mysql-freezing-root='docker run -it --rm --network=host mysql:8.0 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'
+alias mysql-freezing-root-non-interactive='docker run -i --rm --network=host mysql:8.0 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'
 ```
 
 You can put these aliases in your `$HOME/.profile` or `$HOME/.bashrc` files to make them stick.
@@ -125,8 +125,8 @@ Reading table information for completion of table and column names
 You can turn off this feature to get a quicker startup with -A
 
 Welcome to the MySQL monitor.  Commands end with ; or \g.
-Your MySQL connection id is 4
-Server version: 5.7.41 MySQL Community Server (GPL)
+Your MySQL connection id is 12
+Server version: 8.0.40 MySQL Community Server - GPL
 
 Copyright (c) 2000, 2023, Oracle and/or its affiliates.
 
@@ -138,16 +138,16 @@ Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
 mysql> status
 --------------
-mysql  Ver 14.14 Distrib 5.7.41, for Linux (x86_64) using  EditLine wrapper
+mysql  Ver 14.14 Distrib 5.7.44, for Linux (x86_64) using  EditLine wrapper
 
-Connection id:		4
+Connection id:		12
 Current database:	freezing
 Current user:		freezing@172.18.0.1
-SSL:			Cipher in use is DHE-RSA-AES128-GCM-SHA256
+SSL:			Cipher in use is ECDHE-RSA-AES128-GCM-SHA256
 Current pager:		stdout
 Using outfile:		''
 Using delimiter:	;
-Server version:		5.7.41 MySQL Community Server (GPL)
+Server version:		8.0.40 MySQL Community Server - GPL
 Protocol version:	10
 Connection:		127.0.0.1 via TCP/IP
 Server characterset:	utf8mb4
@@ -155,21 +155,22 @@ Db     characterset:	utf8mb4
 Client characterset:	utf8mb4
 Conn.  characterset:	utf8mb4
 TCP port:		3306
-Uptime:			1 hour 48 min 0 sec
+Uptime:			4 min 20 sec
 
-Threads: 1  Questions: 80  Slow queries: 0  Opens: 146  Flush tables: 1  Open tables: 139  Queries per second avg: 0.012
+Threads: 4  Questions: 399  Slow queries: 0  Opens: 265  Flush tables: 3  Open tables: 184  Queries per second avg: 1.534
 --------------
 
 mysql> show databases;
 +--------------------+
 | Database           |
 +--------------------+
-| information_schema |
 | freezing           |
+| information_schema |
+| performance_schema |
 +--------------------+
-2 rows in set (0.00 sec)
+3 rows in set (0.00 sec)
 
-mysql> quit;
+mysql> quit
 Bye
 ```
 Due to a quirk of Docker, you will need to use the `mysql-freezing-non-interactive` and `mysql-freezing-root-non-interactive` aliases when you redirect the input of MySQL, such as when loading a database dump.
