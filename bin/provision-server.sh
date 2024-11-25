@@ -93,6 +93,18 @@ http
 https
 '
 
+# Set up swap
+SWAPFILE=/swap
+if [[ ! -f "$SWAPFILE" ]]; then
+    dd if=/dev/zero of="$SWAPFILE" bs=1M count=4096
+    chmod 600 "$SWAPFILE"
+    mkswap "$SWAPFILE"
+    swapon "$SWAPFILE"
+    if ! grep -q '^/swap' /etc/fstab; then
+        echo "/swap swap swap defaults 0 0" >> /etc/fstab
+    fi
+fi
+
 
 # Install packages
 # Thanks https://linux.how2shout.com/enable-crb-code-ready-builder-powertools-in-almalinux-9/
@@ -139,4 +151,3 @@ usermod -aG docker rocky
 
 # Adjust selinux
 setenforce Enforcing
-
