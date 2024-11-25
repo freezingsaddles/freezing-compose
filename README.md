@@ -404,4 +404,14 @@ docker-compose ps
 
 If any containers are not started, troubleshoot with `docker ps` and `docker logs container-name`. You might need to tweak the configuration multiple times before all containers come up cleanly. Restart the containers after tweaking the `.env` file each time with `docker-compose up -d` until things work.
 
+# Legal
 
+# Legal
+
+This software is a community-driven effort, and as such the contributions are owned by the individual contributors:
+
+Copyright 2018 Hans Lillelid <br>
+Copyright 2018 Richard Bullington-McGuire <br>
+Copyright 2023 Adam Sloan <br>
+
+This software is licensed under the [Apache 2.0 license](LICENSE), with some marked portions available under compatible licenses (such as the [MIT-licensed `bin/provision-server.sh`].)
