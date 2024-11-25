@@ -5,8 +5,12 @@
 # Installs packages, configures firewalls.
 #
 # Adapted from MIT licensed https://github.com/obscureorganization/obscure-scripts/blob/main/tiamat-install.sh
+#
+# Usage:
+#     ssh rocky@example.com sudo su - < bin/provision-server.sh
 
 # Set unofficial bash strict mode http://redsymbol.net/articles/unofficial-bash-strict-mode/
+
 set -euo pipefail
 IFS=$'\n\t'
 
@@ -29,12 +33,18 @@ git
 postfix
 s-nail
 sysstat
+yum-utils
+vim-enhanced
 '
 
 extra_packages='
 bacula-client
 bacula-common
 bacula-libs
+docker-ce
+docker-ce-cli
+docker-compose-plugin
+containerd.io
 nagios-plugins
 nagios-plugins-disk
 nagios-plugins-load
@@ -61,6 +71,9 @@ dnf config-manager --set-enabled crb
 #shellcheck disable=SC2086
 dnf -y install $packages
 
+sudo yum-config-manager --add-repo \
+   https://download.docker.com/linux/centos/docker-ce.repo
+
 #shellcheck disable=SC2086
 dnf -y install $extra_packages
 
@@ -78,16 +91,21 @@ for svc in $firewall_services_allow; do
 done
 
 firewall-cmd --runtime-to-permanent
+firewall-cmd --reload
 
 # Start services
 services='
 dnf-automatic.timer
+firewalld
 postfix
+docker
 '
 for svc in $services; do
 	systemctl enable "$svc"
 	systemctl start "$svc"
 done
+
+usermod -aG docker rocky
 
 # Adjust selinux
 setenforce Enforcing
