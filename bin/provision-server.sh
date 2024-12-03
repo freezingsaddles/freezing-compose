@@ -138,9 +138,10 @@ firewall-cmd --reload
 # Start services
 services='
 dnf-automatic.timer
-firewalld
-postfix
 docker
+firewalld
+sysstat-collect.timer
+postfix
 '
 for svc in $services; do
 	systemctl enable "$svc"
