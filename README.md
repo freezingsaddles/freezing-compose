@@ -415,4 +415,4 @@ Copyright 2018 Hans Lillelid <br>
 Copyright 2018 Richard Bullington-McGuire <br>
 Copyright 2023 Adam Sloan <br>
 
-This software is licensed under the [Apache 2.0 license](LICENSE), with some marked portions available under compatible licenses (such as the [MIT-licensed `bin/provision-server.sh`].)
+This software is licensed under the [Apache 2.0 license](LICENSE), with some marked portions available under compatible licenses (such as the [MIT-licensed `bin/provision-server.sh`](bin/provision-server.sh) and [`bin/recover-container-name-conflict.sh`](recover-container-name-conflict.sh).)
