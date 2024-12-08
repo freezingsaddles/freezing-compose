@@ -78,7 +78,8 @@ services:
     # Version 2.3 is the last compatible version,
     # sha256:04b98015574addfba886023892f5e0ed28c012e1e72b8b43079e006f7e2c54d0
     # specifically.
-    # TODO: fix this https://github.com/freezingsaddles/freezing-compose/issues/32
+    # TODO: fix this with:
+    # https://github.com/freezingsaddles/freezing-compose/issues/32  
     image: jrcs/letsencrypt-nginx-proxy-companion:2.3
     container_name: nginx-letsencrypt
     hostname: nginx-letsencrypt
