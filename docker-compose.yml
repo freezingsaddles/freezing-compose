@@ -193,6 +193,7 @@ services:
     depends_on:
       - beanstalkd
     environment:
+      BIND_INTERFACE: "0.0.0.0"
       COMPETITION_TITLE: ${COMPETITION_TITLE}
       DEBUG: ${DEBUG}
       END_DATE: ${END_DATE}
