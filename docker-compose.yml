@@ -46,7 +46,7 @@ services:
     container_name: beanstalkd
     volumes:
       - beanstalkd-data:/data
-    restart: unless-stopped
+    restart: always
     logging:
       driver: awslogs
       options:
@@ -67,7 +67,8 @@ services:
       - 'nginx-webroot:/usr/share/nginx/html'
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
-    restart: unless-stopped
+      - "com.github.nginx-proxy.nginx"
+    restart: always
     logging:
       driver: awslogs
       options:
@@ -92,12 +93,14 @@ services:
       - 'nginx-config:/etc/nginx/conf.d'
       - 'nginx-vhosts:/etc/nginx/vhost.d'
       - 'nginx-webroot:/usr/share/nginx/html'
-    restart: unless-stopped
+    restart: always
     logging:
       driver: awslogs
       options:
         awslogs-group: logspout
         awslogs-stream: nginx-letsencrypt
+    depends_on:
+      - nginx
 
   nginx-docker-gen:
     image: jwilder/docker-gen
@@ -113,7 +116,7 @@ services:
       - 'nginx-webroot:/usr/share/nginx/html'
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.docker_gen"
-    restart: unless-stopped
+    restart: always
     logging:
       driver: awslogs
       options:
@@ -154,7 +157,7 @@ services:
       VISUAL_CROSSING_API_KEY: ${VISUAL_CROSSING_API_KEY}
     volumes:
       - ./sync-data:/data
-    restart: unless-stopped
+    restart: always
     logging:
       driver: awslogs
       options:
@@ -174,7 +177,7 @@ services:
       LETSENCRYPT_HOST: ${FREEZING_NQ_FQDN}
       STRAVA_VERIFY_TOKEN: ${STRAVA_VERIFY_TOKEN}
       VIRTUAL_HOST: ${FREEZING_NQ_FQDN}
-    restart: unless-stopped
+    restart: always
     logging:
       driver: awslogs
       options:
@@ -208,7 +211,7 @@ services:
       TEAMS: ${TEAMS}
       TIMEZONE: ${TIMEZONE:-America/New_York}
       VIRTUAL_HOST: ${FREEZING_WEB_FQDN}
-    restart: unless-stopped
+    restart: always
     logging:
       driver: awslogs
       options:
