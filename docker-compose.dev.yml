@@ -86,6 +86,7 @@ services:
     ports:
       - 8000:8000
     environment:
+      BIND_INTERFACE: "0.0.0.0"
       COMPETITION_TITLE: ${COMPETITION_TITLE}
       DEBUG: ${DEBUG}
       END_DATE: ${END_DATE}
