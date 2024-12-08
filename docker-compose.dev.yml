@@ -12,8 +12,8 @@ services:
     logging: &json-logging
       driver: json-file
       options:
-         max-file: "2"
-         max-size: 10m
+        max-file: "2"
+        max-size: 10m
 
   beanstalkd:
     restart: unless-stopped
