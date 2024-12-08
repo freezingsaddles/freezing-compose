@@ -156,7 +156,9 @@ setenforce Enforcing
 # Ensure Freezing Saddles site comes up on reboot
 # It runs with Docker Compose so this should be sufficient.
 # nginx was not starting as expected sometimes.
-# https://github.com/freezingsaddles/freezing-compose/issues
+# https://github.com/freezingsaddles/freezing-compose/issues/5
+#
+# Thanks https://unix.stackexchange.com/a/271666 for inspiration
 # shellcheck disable=SC2154
 cat > /usr/local/bin/restart-on-reboot.sh <<EOF
 #!/usr/bin/env bash
