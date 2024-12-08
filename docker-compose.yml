@@ -35,24 +35,10 @@ services:
       SD_BACKEND: docker
     restart: unless-stopped
     logging:
-      driver: json-file
+      driver: awslogs
       options:
-        max-file: "2"
-        max-size: 10m
-
-  logspout:
-    image: mdsol/logspout
-    hostname: logspout
-    container_name: logspout
-    command: "${SYSLOG_ENDPOINT}"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-file: "2"
-        max-size: 10m
+        awslogs-group: logspout
+        awslogs-stream: dd-agent
 
   beanstalkd:
     build: ./docker-beanstalkd
@@ -62,10 +48,10 @@ services:
       - beanstalkd-data:/data
     restart: unless-stopped
     logging:
-      driver: json-file
+      driver: awslogs
       options:
-        max-file: "2"
-        max-size: 10m
+        awslogs-group: logspout
+        awslogs-stream: beanstalkd
 
   nginx:
     image: nginx:stable
@@ -83,15 +69,17 @@ services:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
     restart: unless-stopped
     logging:
-      driver: json-file
+      driver: awslogs
       options:
-        max-file: "2"
-        max-size: 10m
+        awslogs-group: logspout
+        awslogs-stream: nginx
 
   nginx-letsencrypt:
     # Version 2.3 is the last compatible version,
     # sha256:04b98015574addfba886023892f5e0ed28c012e1e72b8b43079e006f7e2c54d0
     # specifically.
+    # TODO: fix this with:
+    # https://github.com/freezingsaddles/freezing-compose/issues/32
     image: jrcs/letsencrypt-nginx-proxy-companion:2.3
     container_name: nginx-letsencrypt
     hostname: nginx-letsencrypt
@@ -106,10 +94,10 @@ services:
       - 'nginx-webroot:/usr/share/nginx/html'
     restart: unless-stopped
     logging:
-      driver: json-file
+      driver: awslogs
       options:
-        max-file: "2"
-        max-size: 10m
+        awslogs-group: logspout
+        awslogs-stream: nginx-letsencrypt
 
   nginx-docker-gen:
     image: jwilder/docker-gen
@@ -127,10 +115,10 @@ services:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.docker_gen"
     restart: unless-stopped
     logging:
-      driver: json-file
+      driver: awslogs
       options:
-        max-file: "2"
-        max-size: 10m
+        awslogs-group: logspout
+        awslogs-stream: nginx-docker-gen
 
   # ----------------------------------------------------------------------------
   # Application Containers
@@ -168,10 +156,10 @@ services:
       - ./sync-data:/data
     restart: unless-stopped
     logging:
-      driver: json-file
+      driver: awslogs
       options:
-        max-file: "2"
-        max-size: 10m
+        awslogs-group: logspout
+        awslogs-stream: freezing-sync
 
   freezing-nq:
     image: freezingsaddles/freezing-nq:${FREEZING_NQ_TAG:-latest}
@@ -188,10 +176,10 @@ services:
       VIRTUAL_HOST: ${FREEZING_NQ_FQDN}
     restart: unless-stopped
     logging:
-      driver: json-file
+      driver: awslogs
       options:
-        max-file: "2"
-        max-size: 10m
+        awslogs-group: logspout
+        awslogs-stream: freezing-nq
     depends_on:
       - beanstalkd
 
@@ -222,10 +210,10 @@ services:
       VIRTUAL_HOST: ${FREEZING_WEB_FQDN}
     restart: unless-stopped
     logging:
-      driver: json-file
+      driver: awslogs
       options:
-        max-file: "2"
-        max-size: 10m
+        awslogs-group: logspout
+        awslogs-stream: freezing-web
 
   wordpress:
     image: wordpress:5.8.2
@@ -242,7 +230,7 @@ services:
       WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
       WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
     logging:
-      driver: json-file
+      driver: awslogs
       options:
-        max-file: "2"
-        max-size: 10m
+        awslogs-group: logspout
+        awslogs-stream: wordpress

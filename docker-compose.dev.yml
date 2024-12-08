@@ -1,6 +1,4 @@
 ---
-version: '3'
-
 volumes:
   freezing-data:
     external: true
@@ -11,21 +9,27 @@ services:
 
   datadog:
     restart: unless-stopped
-
-  logspout:
-    restart: unless-stopped
+    logging: &json-logging
+      driver: json-file
+      options:
+        max-file: "2"
+        max-size: 10m
 
   beanstalkd:
     restart: unless-stopped
+    logging: *json-logging
 
   nginx:
     restart: unless-stopped
+    logging: *json-logging
 
   nginx-letsencrypt:
     restart: unless-stopped
+    logging: *json-logging
 
   nginx-docker-gen:
     restart: unless-stopped
+    logging: *json-logging
 
   # Database used for local development
   mysql:
@@ -46,6 +50,7 @@ services:
       MYSQL_PORT: ${MYSQL_PORT:-3306}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-terrible-root-password-which-should-be-changed}  # yamllint disable-line rule:line-length
       MYSQL_USER: ${MYSQL_USER:-freezing}
+    logging: *json-logging
 
   #### Freezing Saddles containers
 
@@ -57,18 +62,20 @@ services:
       BEANSTALKD_PORT: ${BEANSTALKD_PORT:-11300}
       MYSQL_HOST: ${MYSQL_HOST:-mysql}
       MYSQL_PORT: ${MYSQL_HOST:-3306}
-        #SQLALCHEMY_SILENCE_UBER_WARNING: ${SQLALCHEMY_SILENCE_UBER_WARNING:-0}
+      SQLALCHEMY_SILENCE_UBER_WARNING: ${SQLALCHEMY_SILENCE_UBER_WARNING:-false}
       SQLALCHEMY_URL: ${SQLALCHEMY_URL}
-      SQLALCHEMY_WARN_20: ${SQLALCHEMY_WARN_20:-1}
+      SQLALCHEMY_WARN_20: ${SQLALCHEMY_WARN_20:-true}
     depends_on:
       - beanstalkd
       - mysql
+    logging: *json-logging
 
   freezing-nq:
     image: ${FREEZING_NQ_IMAGE:-freezingsaddles/freezing-nq:latest}
     restart: unless-stopped
     depends_on:
       - beanstalkd
+    logging: *json-logging
 
   freezing-web:
     image: ${FREEZING_WEB_IMAGE:-freezingsaddles/freezing-web:latest}
@@ -88,7 +95,7 @@ services:
       MAIN_TEAM: ${MAIN_TEAM}
       OBSERVER_TEAMS: ${OBSERVER_TEAMS}
       SECRET_KEY: ${SECRET_KEY}
-        #SQLALCHEMY_SILENCE_UBER_WARNING: ${SQLALCHEMY_SILENCE_UBER_WARNING:-0}
+      SQLALCHEMY_SILENCE_UBER_WARNING: ${SQLALCHEMY_SILENCE_UBER_WARNING:-false}
       SQLALCHEMY_URL: ${SQLALCHEMY_URL}
       SQLALCHEMY_WARN_20: ${SQLALCHEMY_WARN_20:-1}
       START_DATE: ${START_DATE}
@@ -97,3 +104,4 @@ services:
       TEAMS: ${TEAMS}
       TIMEZONE: ${TIMEZONE:-America/New_York}
       VIRTUAL_HOST: ${FREEZING_WEB_FQDN}
+    logging: *json-logging
