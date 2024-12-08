@@ -152,3 +152,26 @@ usermod -aG docker rocky
 
 # Adjust selinux
 setenforce Enforcing
+
+# Ensure Freezing Saddles site comes up on reboot
+# It runs with Docker Compose so this should be sufficient.
+# nginx was not starting as expected sometimes.
+# https://github.com/freezingsaddles/freezing-compose/issues
+# shellcheck disable=SC2154
+cat > /usr/local/bin/restart-on-reboot.sh <<EOF
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ -d /opt/compose ]]; then
+   (
+    cd /opt/compose
+    sleep 60
+    docker compose ps
+    docker compose up -d
+    docker compose ps
+   ) 2>&1 | logger -t freezingsaddles
+fi
+EOF
+chmod 750 /usr/local/bin/restart-on-reboot.sh
+crontab <<EOF
+@reboot /usr/local/bin/restart-on-reboot.sh
+EOF
