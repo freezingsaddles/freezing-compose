@@ -31,8 +31,8 @@ services:
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
     environment:
-      SD_BACKEND: docker
       API_KEY: ${DATADOG_API_KEY}
+      SD_BACKEND: docker
     restart: unless-stopped
     logging:
       driver: json-file
@@ -75,8 +75,8 @@ services:
       - "80:80"
       - '443:443'
     volumes:
-      - 'nginx-config:/etc/nginx/conf.d'
       - 'nginx-certs:/etc/nginx/certs'
+      - 'nginx-config:/etc/nginx/conf.d'
       - 'nginx-vhosts:/etc/nginx/vhost.d'
       - 'nginx-webroot:/usr/share/nginx/html'
     labels:
@@ -99,11 +99,11 @@ services:
     # environment:
     #   NGINX_DOCKER_GEN_CONTAINER: nginx-docker-gen
     volumes:
-      - 'nginx-config:/etc/nginx/conf.d'
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
       - 'nginx-certs:/etc/nginx/certs'
+      - 'nginx-config:/etc/nginx/conf.d'
       - 'nginx-vhosts:/etc/nginx/vhost.d'
       - 'nginx-webroot:/usr/share/nginx/html'
-      - '/var/run/docker.sock:/var/run/docker.sock:ro'
     restart: unless-stopped
     logging:
       driver: json-file
@@ -117,12 +117,12 @@ services:
     hostname: nginx-docker-gen
     command: -notify-sighup nginx -watch -wait 5s:30s /etc/docker-gen/templates/nginx.tmpl /etc/nginx/conf.d/default.conf  # yamllint disable-line rule:line-length
     volumes:
-      - 'nginx-config:/etc/nginx/conf.d'
+      - './web/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl'
+      - '/var/run/docker.sock:/tmp/docker.sock:ro'
       - 'nginx-certs:/etc/nginx/certs'
+      - 'nginx-config:/etc/nginx/conf.d'
       - 'nginx-vhosts:/etc/nginx/vhost.d'
       - 'nginx-webroot:/usr/share/nginx/html'
-      - '/var/run/docker.sock:/tmp/docker.sock:ro'
-      - './web/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl'
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.docker_gen"
     restart: unless-stopped
@@ -144,24 +144,26 @@ services:
       - beanstalkd
       - datadog
     environment:
-      ENVIRONMENT: ${ENVIRONMENT}
-      DEBUG: ${DEBUG}
       BEANSTALKD_HOST: ${BEANSTALKD_HOST:-beanstalkd}
       BEANSTALKD_PORT: ${BEANSTALKD_PORT:-11300}
-      SQLALCHEMY_URL: ${SQLALCHEMY_URL}
-      STRAVA_CLIENT_ID: ${STRAVA_CLIENT_ID}
-      STRAVA_CLIENT_SECRET: ${STRAVA_CLIENT_SECRET}
-      VISUAL_CROSSING_API_KEY: ${VISUAL_CROSSING_API_KEY}
-      TEAMS: ${TEAMS}
-      OBSERVER_TEAMS: ${OBSERVER_TEAMS}
-      MAIN_TEAM: ${MAIN_TEAM}
-      START_DATE: ${START_DATE}
-      END_DATE: ${END_DATE}
-      DATADOG_HOST: ${DATADOG_HOST:-datadog}
-      DATADOG_PORT: ${DATADOG_PORT:-8125}
       DATADOG_API_KEY: ${DATADOG_API_KEY}
       DATADOG_APP_KEY: ${DATADOG_APP_KEY}
+      DATADOG_HOST: ${DATADOG_HOST:-datadog}
+      DATADOG_PORT: ${DATADOG_PORT:-8125}
+      DEBUG: ${DEBUG}
+      END_DATE: ${END_DATE}
+      ENVIRONMENT: ${ENVIRONMENT}
+      MAIN_TEAM: ${MAIN_TEAM}
+      OBSERVER_TEAMS: ${OBSERVER_TEAMS}
+      SQLALCHEMY_SILENCE_UBER_WARNING: ${SQLALCHEMY_SILENCE_UBER_WARNING:-false}
+      SQLALCHEMY_URL: ${SQLALCHEMY_URL}
+      SQLALCHEMY_WARN_20: ${SQLALCHEMY_WARN_20:-true}
+      START_DATE: ${START_DATE}
+      STRAVA_CLIENT_ID: ${STRAVA_CLIENT_ID}
+      STRAVA_CLIENT_SECRET: ${STRAVA_CLIENT_SECRET}
+      TEAMS: ${TEAMS}
       TIMEZONE: ${TIMEZONE:-America/New_York}
+      VISUAL_CROSSING_API_KEY: ${VISUAL_CROSSING_API_KEY}
     volumes:
       - ./sync-data:/data
     restart: unless-stopped
@@ -172,18 +174,18 @@ services:
         max-size: 10m
 
   freezing-nq:
-    image: freezingsaddles/freezing-nq:latest
+    image: freezingsaddles/freezing-nq:${FREEZING_NQ_TAG:-latest}
     hostname: freezing-nq
     container_name: freezing-nq
     environment:
-      ENVIRONMENT: ${ENVIRONMENT}
-      VIRTUAL_HOST: ${FREEZING_NQ_FQDN}
-      LETSENCRYPT_HOST: ${FREEZING_NQ_FQDN}
-      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
-      DEBUG: ${DEBUG}
       BEANSTALKD_HOST: ${BEANSTALKD_HOST:-beanstalkd}
       BEANSTALKD_PORT: ${BEANSTALKD_PORT:-11300}
+      DEBUG: ${DEBUG}
+      ENVIRONMENT: ${ENVIRONMENT}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+      LETSENCRYPT_HOST: ${FREEZING_NQ_FQDN}
       STRAVA_VERIFY_TOKEN: ${STRAVA_VERIFY_TOKEN}
+      VIRTUAL_HOST: ${FREEZING_NQ_FQDN}
     restart: unless-stopped
     logging:
       driver: json-file
@@ -200,22 +202,24 @@ services:
     depends_on:
       - beanstalkd
     environment:
-      ENVIRONMENT: ${ENVIRONMENT}
-      VIRTUAL_HOST: ${FREEZING_WEB_FQDN}
-      LETSENCRYPT_HOST: ${FREEZING_WEB_FQDN}
-      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
-      SECRET_KEY: ${SECRET_KEY}
+      COMPETITION_TITLE: ${COMPETITION_TITLE}
       DEBUG: ${DEBUG}
+      END_DATE: ${END_DATE}
+      ENVIRONMENT: ${ENVIRONMENT}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+      LETSENCRYPT_HOST: ${FREEZING_WEB_FQDN}
+      MAIN_TEAM: ${MAIN_TEAM}
+      OBSERVER_TEAMS: ${OBSERVER_TEAMS}
+      SECRET_KEY: ${SECRET_KEY}
+      SQLALCHEMY_SILENCE_UBER_WARNING: ${SQLALCHEMY_SILENCE_UBER_WARNING:-false}
       SQLALCHEMY_URL: ${SQLALCHEMY_URL}
+      SQLALCHEMY_WARN_20: ${SQLALCHEMY_WARN_20:-true}
+      START_DATE: ${START_DATE}
       STRAVA_CLIENT_ID: ${STRAVA_CLIENT_ID}
       STRAVA_CLIENT_SECRET: ${STRAVA_CLIENT_SECRET}
       TEAMS: ${TEAMS}
-      OBSERVER_TEAMS: ${OBSERVER_TEAMS}
-      MAIN_TEAM: ${MAIN_TEAM}
-      START_DATE: ${START_DATE}
-      END_DATE: ${END_DATE}
       TIMEZONE: ${TIMEZONE:-America/New_York}
-      COMPETITION_TITLE: ${COMPETITION_TITLE}
+      VIRTUAL_HOST: ${FREEZING_WEB_FQDN}
     restart: unless-stopped
     logging:
       driver: json-file
@@ -230,13 +234,13 @@ services:
       - ./wordpress:/var/www/html
     restart: unless-stopped
     environment:
-      VIRTUAL_HOST: ${FREEZING_REGISTER_FQDN}
-      LETSENCRYPT_HOST: ${FREEZING_REGISTER_FQDN}
       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+      LETSENCRYPT_HOST: ${FREEZING_REGISTER_FQDN}
+      VIRTUAL_HOST: ${FREEZING_REGISTER_FQDN}
       WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
-      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
-      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
       WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
     logging:
       driver: json-file
       options:

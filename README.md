@@ -108,15 +108,24 @@ Version: '5.6.46'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Comm
 To connect to the database, you can run a local mysql client if you already have one installed.
 
 You can use Docker to connect to the database. The commands required are long and tedious, so create a shell alias for it. Substitute your values for the password and other configurable settings into the aliases below and run these at a shell prompt:
+
 ```shell
-alias mysql-freezing='docker run -it --rm --network=host mysql:8.0 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-set=utf8mb4'
-alias mysql-freezing-non-interactive='docker run -i --rm --network=host mysql:8.0 mysql --host=127.0.0.1 --port=3306 --user=freezing --password=please-change-me-as-this-is-a-default --database=freezing --default-character-set=utf8mb4'
-alias mysql-freezing-dump='docker run -i --rm --network=host mysql:8.0 mysqldump --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed freezing --default-character-set=utf8mb4'
-alias mysql-freezing-root='docker run -it --rm --network=host mysql:8.0 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'
-alias mysql-freezing-root-non-interactive='docker run -i --rm --network=host mysql:8.0 mysql --host=127.0.0.1 --port=3306 --user=root --password=terrible-root-password-which-should-be-changed --database=freezing --default-character-set=utf8mb4'
+export MYSQL_VERSION=8.0
+export MYSQL_HOST=localhost
+export MYSQL_PORT=3306
+export MYSQL_USER=freezing
+export MYSQL_PASSWORD="please-change-me-as-this-is-a-default"
+export MYSQL_ROOT_USER=root
+export MYSQL_ROOT_PASSWORD="terrible-root-password-which-should-be-changed"
+export MYSQL_DATABASE=freezing
+alias mysqldump-freezing='docker run -i --rm --network=host mysql:$MYSQL_VERSION  mysqldump --host=$MYSQL_HOST --port=$MYSQL_PORT --user=$MYSQL_ROOT_USER --password="$MYSQL_ROOT_PASSWORD" $MYSQL_DATABASE --default-character-set=utf8mb4'
+alias mysql-freezing='docker run -it --rm --volume $HOME/.mysql_history:/root/.mysql_history --network=host mysql:$MYSQL_VERSION  mysql --host=$MYSQL_HOST --port=$MYSQL_PORT --user=$MYSQL_USER --password="$MYSQL_PASSWORD" --database=$MYSQL_DATABASE --default-character-set=utf8mb4'
+alias mysql-freezing-non-interactive='docker run -i --rm --volume $HOME/.mysql_history:/root/.mysql_history --network=host mysql:$MYSQL_VERSION mysql --host=$MYSQL_HOST --port=$MYSQL_PORT --user=$MYSQL_USER --password="$MYSQL_PASSWORD" --database=$MYSQL_DATABASE --default-character-set=utf8mb4'
+alias mysql-freezing-root='docker run -it --rm --volume $HOME/.mysql_history:/root/.mysql_history --network=host mysql:$MYSQL_VERSION  mysql --host=$MYSQL_HOST --port=$MYSQL_PORT --user=$MYSQL_ROOT_USER --password="$MYSQL_ROOT_PASSWORD" --database=$MYSQL_DATABASE --default-character-set=utf8mb4'
+alias mysql-freezing-non-interactive-root='docker run -i --rm --volume $HOME/.mysql_history:/root/.mysql_history --network=host mysql:$MYSQL_VERSION mysql --host=$MYSQL_HOST --port=$MYSQL_PORT --user=$MYSQL_ROOT_USER --password="$MYSQL_ROOT_PASSWORD" --database=$MYSQL_DATABASE --default-character-set=utf8mb4'
 ```
 
-You can put these aliases in your `$HOME/.profile` or `$HOME/.bashrc` files to make them stick.
+You can put these aliases in your shell configuration files such as `$HOME/.profile` or `$HOME/.bashrc` files to make them stick.
 
 ```shell
  $  mysql-freezing
@@ -346,14 +355,13 @@ The current production setup assumes that you will use an external MySQL server,
 
 ### 2.1 Clone Repository
 
-Clone the repository this repository onto a server that runs Docker and `docker-compose`. [freezingsaddles.org](https://freezingsaddles.org/) has run on CoreOS since 2018 but works but any modern operating system distribution that has Docker support will probably work. That includes CentOS 7 and 8, Ubuntu 16.04 and 18.04, and many others.
+Clone the repository this repository onto a server that runs Docker and `docker-compose`. [freezingsaddles.org](https://freezingsaddles.org/) ran on CoreOS from 2018 to 2020, and today runs on Rocky Linux 9. Ths should works but any modern operating system distribution that has Docker support will probably work. That includes RHEL 7+ and open source derivatives such as Centos, Rocky Linux and Alma Linux, all Ubuntu LTS versions from 16.04 on, and so on.
 
 For example:
 
 ```shell
-sudo git clone https://github.com/freezingsaddles/freezing-compose /opt/compose
-# Change ownership back to your regular user so you can update it
-sudo chown -R $(id -u):$(id -g) /opt/compose
+git clone https://github.com/freezingsaddles/freezing-compose
+ln -s "$PWD/freezing-compose" /opt/compose
 ```
 
 ### 2.2 Create Persistent Docker Volumes
