@@ -1,6 +1,4 @@
 ---
-version: '3'
-
 volumes:
   freezing-data:
     external: true
@@ -10,9 +8,6 @@ services:
   #### Stock containers
 
   datadog:
-    restart: unless-stopped
-
-  logspout:
     restart: unless-stopped
 
   beanstalkd:
@@ -57,9 +52,9 @@ services:
       BEANSTALKD_PORT: ${BEANSTALKD_PORT:-11300}
       MYSQL_HOST: ${MYSQL_HOST:-mysql}
       MYSQL_PORT: ${MYSQL_HOST:-3306}
-        #SQLALCHEMY_SILENCE_UBER_WARNING: ${SQLALCHEMY_SILENCE_UBER_WARNING:-0}
+      SQLALCHEMY_SILENCE_UBER_WARNING: ${SQLALCHEMY_SILENCE_UBER_WARNING:-false}
       SQLALCHEMY_URL: ${SQLALCHEMY_URL}
-      SQLALCHEMY_WARN_20: ${SQLALCHEMY_WARN_20:-1}
+      SQLALCHEMY_WARN_20: ${SQLALCHEMY_WARN_20:-true}
     depends_on:
       - beanstalkd
       - mysql
@@ -88,7 +83,7 @@ services:
       MAIN_TEAM: ${MAIN_TEAM}
       OBSERVER_TEAMS: ${OBSERVER_TEAMS}
       SECRET_KEY: ${SECRET_KEY}
-        #SQLALCHEMY_SILENCE_UBER_WARNING: ${SQLALCHEMY_SILENCE_UBER_WARNING:-0}
+      SQLALCHEMY_SILENCE_UBER_WARNING: ${SQLALCHEMY_SILENCE_UBER_WARNING:-false}
       SQLALCHEMY_URL: ${SQLALCHEMY_URL}
       SQLALCHEMY_WARN_20: ${SQLALCHEMY_WARN_20:-1}
       START_DATE: ${START_DATE}
