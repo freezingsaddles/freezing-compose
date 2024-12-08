@@ -9,38 +9,27 @@ services:
 
   datadog:
     restart: unless-stopped
-    logging:
+    logging: &json-logging
       driver: json-file
-        max-file: "2"
-        max-size: 10m
+      options:
+         max-file: "2"
+         max-size: 10m
 
   beanstalkd:
     restart: unless-stopped
-    logging:
-      driver: json-file
-        max-file: "2"
-        max-size: 10m
+    logging: *json-logging
 
   nginx:
     restart: unless-stopped
-    logging:
-      driver: json-file
-        max-file: "2"
-        max-size: 10m
+    logging: *json-logging
 
   nginx-letsencrypt:
     restart: unless-stopped
-    logging:
-      driver: json-file
-        max-file: "2"
-        max-size: 10m
+    logging: *json-logging
 
   nginx-docker-gen:
     restart: unless-stopped
-    logging:
-      driver: json-file
-        max-file: "2"
-        max-size: 10m
+    logging: *json-logging
 
   # Database used for local development
   mysql:
@@ -61,10 +50,7 @@ services:
       MYSQL_PORT: ${MYSQL_PORT:-3306}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-terrible-root-password-which-should-be-changed}  # yamllint disable-line rule:line-length
       MYSQL_USER: ${MYSQL_USER:-freezing}
-    logging:
-      driver: json-file
-        max-file: "2"
-        max-size: 10m
+    logging: *json-logging
 
   #### Freezing Saddles containers
 
@@ -82,20 +68,14 @@ services:
     depends_on:
       - beanstalkd
       - mysql
-    logging:
-      driver: json-file
-        max-file: "2"
-        max-size: 10m
+    logging: *json-logging
 
   freezing-nq:
     image: ${FREEZING_NQ_IMAGE:-freezingsaddles/freezing-nq:latest}
     restart: unless-stopped
     depends_on:
       - beanstalkd
-    logging:
-      driver: json-file
-        max-file: "2"
-        max-size: 10m
+    logging: *json-logging
 
   freezing-web:
     image: ${FREEZING_WEB_IMAGE:-freezingsaddles/freezing-web:latest}
@@ -124,7 +104,4 @@ services:
       TEAMS: ${TEAMS}
       TIMEZONE: ${TIMEZONE:-America/New_York}
       VIRTUAL_HOST: ${FREEZING_WEB_FQDN}
-    logging:
-      driver: json-file
-        max-file: "2"
-        max-size: 10m
+    logging: *json-logging
