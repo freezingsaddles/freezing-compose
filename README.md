@@ -107,7 +107,7 @@ Version: '5.6.46'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Comm
 ### 1.3.1 Connecting to the database
 To connect to the database, you can run a local mysql client if you already have one installed.
 
-You can use Docker to connect to the database. The commands required are long and tedious, so create a shell alias for it. Substitute your values for the password and other configurable settings into the aliases below and run these at a shell prompt:
+You can also use Docker to connect to the database. The commands required are long and tedious, so create a shell alias for it. Substitute your values for the password and other configurable settings into the aliases below and run these at a shell prompt:
 
 ```shell
 export MYSQL_VERSION=8.0
@@ -128,7 +128,7 @@ alias mysql-freezing-non-interactive-root='docker run -i --rm --volume $HOME/.my
 You can put these aliases in your shell configuration files such as `$HOME/.profile` or `$HOME/.bashrc` files to make them stick.
 
 ```shell
- $  mysql-freezing
+ $ mysql-freezing
 mysql: [Warning] Using a password on the command line interface can be insecure.
 Reading table information for completion of table and column names
 You can turn off this feature to get a quicker startup with -A
@@ -199,7 +199,7 @@ Enter password: <type in the root password you configured above>
 Note: if you have trouble with using `127.0.0.1` try `localhost`. Different combinations of Docker and host operating systems and MySQL may have quirks that make one or the other fail. MySQL may assume that you are using a server that is listening on a local unix socket, which won't work since  MySQL in the container only has an exposed listener via TCP/IP.
 
 ### 1.4.1 Optional: Upgrading MySQL
-Previously, `docker-compose.dev.yml` used MySQL 5.6, but [we upgraded to MySQL 5.7](https://github.com/freezingsaddles/freezing-compose/issues/23) in 2022. If you have a volume with a MySQL 5.6 database on your development system, you can upgrade it with these commands:
+Previously, `docker-compose.dev.yml` used MySQL 5.6, but [we upgraded to MySQL 5.7](https://github.com/freezingsaddles/freezing-compose/issues/23) in 2022. Then we [upgraded to MySQL 8.0](https://github.com/             freezingsaddles/freezing-compose/issues/34) in 2024. If you have a volume with an older MySQL 5.6 database on your development system, you can upgrade it with these commands:
 
 ```
 docker-compose-dev stop mysql
@@ -210,7 +210,7 @@ docker-compose-dev stop mysql
 docker-compose-dev up -d mysql
 ```
 
-This will complete the upgrade to MySQL 5.7. 
+This will complete the upgrade to MySQL 8.0. 
 
 ### 1.5 Recreating the MySQL database
 If you ever want to destroy and recreate your MySQL database, just remove the container and volume and re "up" it:
