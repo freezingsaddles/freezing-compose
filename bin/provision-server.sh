@@ -177,3 +177,19 @@ chmod 750 /usr/local/bin/restart-on-reboot.sh
 crontab <<EOF
 @reboot /usr/local/bin/restart-on-reboot.sh
 EOF
+
+# Re-establish Icinga monitoring for freezingsaddles.org #37
+# https://github.com/freezingsaddles/freezing-compose/issues/37
+# allow icinga to SSH into the nagios user.
+# I already fixed the icinga config to remove the agent-based assumption.
+mkdir -p ~nagios/.ssh
+cat > ~nagios/.ssh/authorized_keys <<EOF
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC0X58CF7gH0cVPjlrpN/V0ovMHvVS2uhxSaom7+nNb9QuhOZMO2fhEdYGLgGmETnWHGZLXtu5J+uBnafTSxk+EzraHR/1WXCPAhIjelbdTpi606cNssvfqr3ByzNbhm6wg6jsdmLNeabdK3ok7UGh5W+dUsrk+5ZjwCqOzSgU3Mvm+VuQQQ8czx4EASNZOZUsTR/sMCaUfU+5mLKy1Zz7xaZp4FEhCLQ7pEu9IdugRmwNlMKwCW7Qc4bO0y5cA26ghuuZJSdJbnPXTOZYoLV9fpr5QC6ZydMhtEi/kx4aGhCofyOxqeCK6MvMlr4wt6jGY7vIu4bePFj8CL683LRPotkqHnyi65CEkf4UNLjCJwnZMA2GVxAyKgrF8LTTlbaijjBYIPj0gyDuUk6IDfJi8v1RG+bQ82NFWAXela026zIb9zjaz9xDd+IevA+p/0DVIKS4OLpSBof4UfK1mhDUwMDImTC57Ug4P9jSlXxwlWnVxcrU89vXFGBWvJyGfYkCoPPa9AvyS7BYSexg1ylWnxMbnJZsuKb1usEjbSg8Pg4RdxdRO47qSDFTF70W4v7O/85DdkCc6AcxKwXhLhQSvNdyhVGUi66AwYPwxqfE7d+i+ADM2E9f5gajhCYaO96oxd7q8iUcPv8yRRxH7wQdFNWM1tTcuHA6DIzBXY0GhGw== icinga@ur.obscure.org
+EOF
+chmod 700 ~nagios/.ssh
+chmod 600 ~nagios/.ssh/authorized_keys
+chown -R nagios:nagios ~nagios/.ssh
+semanage fcontext -a -t ssh_home_t "/var/spool/nagios/.ssh/(.*)?"
+restorecon -Rv /var/spool/nagios/.ssh
+# Thanks https://unix.stackexchange.com/a/22731
+usermod -s /bin/bash nagios

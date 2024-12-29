@@ -9,8 +9,9 @@ Before you get started, we assume you have already installed [Docker](https://do
 * Docker version 19.03.5, build 633a0ea, on CentOS Linux release 7.7.1908 (Core)
 * Docker version 24.0.6, build ed223bc, on macOS Sequoia 15.1.1 (24B91)
 * Docker version 26.1.3, build b72abbb, on Rocky Linux release 8.10 (Green Obsidian)
+* Docker version 27.4.1, build b9d17ea, on Rocky Linux release 9.4 (Blue Onyx)
 
-It **definitely** will not work with the Docker 1.13 that ships with CentOS 7, for example. If you want to use this with CentOS or another Red Hat Enterprise Linux compatible system, please follow the [Docker Engine CE instructions from the vendor](https://docs.docker.com/install/linux/docker-ce/centos/).
+It **definitely** will not work with the Docker 1.13 that ships with CentOS 7, for example. If you want to use this with CentOS or another Red Hat Enterprise Linux compatible system, please follow the [Docker Engine CE instructions from the vendor](https://docs.docker.com/install/linux/docker-ce/centos/). A provisioning script for Rocky Linux 9 is in [bin/provision-server.sh](bin/provision-server.sh) that will install required tooling on a fresh Rocky Linux 9 system.
 
 ## 1. Development
 
