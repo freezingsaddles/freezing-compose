@@ -41,7 +41,7 @@ services:
         awslogs-stream: dd-agent
 
   beanstalkd:
-    image: freezingsaddles/freezing-beanstalkd:${FREEZING_BEANSTALKD_TAG:-latest}
+    image: freezingsaddles/freezing-beanstalkd:${FREEZING_BEANSTALKD_TAG:-latest  # yamllint disable-line rule:line-length
     hostname: beanstalkd
     container_name: beanstalkd
     volumes:
