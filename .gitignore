@@ -1,3 +1,6 @@
+.DS_Store
 .env*
+.swp*
 /sync-data
 /wordpress
+~*
