@@ -41,7 +41,7 @@ services:
         awslogs-stream: dd-agent
 
   beanstalkd:
-    image: freezingsaddles/freezing-beanstalk:${FREEZING_BEANSTALK_TAG:-latest}
+    image: freezingsaddles/freezing-beanstalkd:${FREEZING_BEANSTALKD_TAG:-latest}
     hostname: beanstalkd
     container_name: beanstalkd
     volumes:
