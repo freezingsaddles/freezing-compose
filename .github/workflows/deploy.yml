@@ -1,0 +1,29 @@
+---
+name: Deploy Latest
+
+on:  # yamllint disable-line
+  push:
+    branches:
+      - 'master'
+
+jobs:
+
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: install
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+          script: |
+            set -euo pipefail
+            cd /opt/compose
+            git checkout master
+            git pull
+            docker compose pull
+            docker compose up -d
