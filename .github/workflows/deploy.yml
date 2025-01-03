@@ -4,7 +4,7 @@ name: Deploy Latest
 on:  # yamllint disable-line
   push:
     branches:
-      - 'master'
+      - 'main'
 
 jobs:
 
@@ -23,7 +23,7 @@ jobs:
           script: |
             set -euo pipefail
             cd /opt/compose
-            git checkout master
+            git checkout main
             git pull
             docker compose pull
             docker compose up -d
