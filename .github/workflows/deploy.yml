@@ -23,6 +23,7 @@ jobs:
           script: |
             set -euo pipefail
             cd /opt/compose
+            git fetch
             git checkout main
             git pull
             docker compose pull
