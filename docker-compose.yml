@@ -213,7 +213,7 @@ services:
       TIMEZONE: ${TIMEZONE:-America/New_York}
       VIRTUAL_HOST: ${FREEZING_WEB_FQDN}
     volumes:
-      - ./web-data:/data
+      - ./web-cache:/cache
     restart: always
     logging:
       driver: awslogs
