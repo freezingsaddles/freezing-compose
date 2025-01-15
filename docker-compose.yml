@@ -212,6 +212,8 @@ services:
       TEAMS: ${TEAMS}
       TIMEZONE: ${TIMEZONE:-America/New_York}
       VIRTUAL_HOST: ${FREEZING_WEB_FQDN}
+    volumes:
+      - ./web-data:/data
     restart: always
     logging:
       driver: awslogs
