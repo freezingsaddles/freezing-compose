@@ -213,7 +213,11 @@ services:
       TIMEZONE: ${TIMEZONE:-America/New_York}
       VIRTUAL_HOST: ${FREEZING_WEB_FQDN}
     volumes:
-      - ./web-cache:/cache
+      - type: tmpfs
+        target: /cache
+        tmpfs:
+          size: 100M
+          mode: 1777
     restart: always
     logging:
       driver: awslogs
