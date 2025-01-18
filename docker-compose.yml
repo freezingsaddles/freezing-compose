@@ -217,7 +217,9 @@ services:
         target: /cache
         tmpfs:
           size: 100M
-          mode: 1777
+          # Must prefix with 0 to have octal
+          # https://stackoverflow.com/a/76172398/424301
+          mode: 01777
     restart: always
     logging:
       driver: awslogs
