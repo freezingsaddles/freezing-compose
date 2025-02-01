@@ -420,7 +420,7 @@ If any containers are not started, troubleshoot with `docker ps` and `docker log
 
 This software is a community-driven effort, and as such the contributions are owned by the individual contributors:
 
-Copyright 2018 Hans Lillelid <br>
+Copyright 2018 Hans Lellelid <br>
 Copyright 2018 Richard Bullington-McGuire <br>
 Copyright 2023 Adam Sloan <br>
 
