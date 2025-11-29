@@ -212,6 +212,7 @@ services:
       TEAMS: ${TEAMS}
       TIMEZONE: ${TIMEZONE:-America/New_York}
       VIRTUAL_HOST: ${FREEZING_WEB_FQDN}
+      DISCORD_INVITATION: ${DISCORD_INVITATION}
     volumes:
       - type: tmpfs
         target: /cache
