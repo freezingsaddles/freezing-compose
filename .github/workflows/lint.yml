@@ -1,5 +1,7 @@
 ---
 name: Lint
+permissions:
+  contents: read
 on: pull_request  # yamllint disable-line rule:truthy
 jobs:
   lint:
