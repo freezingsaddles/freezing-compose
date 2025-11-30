@@ -6,6 +6,9 @@ on:  # yamllint disable-line
     branches:
       - 'main'
 
+permissions:
+  contents: read
+
 jobs:
 
   deploy:
