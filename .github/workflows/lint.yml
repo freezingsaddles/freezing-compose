@@ -4,9 +4,6 @@ permissions:
   contents: read
 on: pull_request  # yamllint disable-line rule:truthy
 
-permissions:
-  contents: read
-
 jobs:
   lint:
     runs-on: ubuntu-latest
