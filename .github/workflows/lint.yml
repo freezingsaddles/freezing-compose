@@ -1,10 +1,27 @@
 ---
 name: Lint
+permissions:
+  contents: read
 on: pull_request  # yamllint disable-line rule:truthy
+
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - name: yaml-lint
-        uses: ibiqlik/action-yamllint@v3
+        uses: ibiqlik/action-yamllint@2576378a8e339169678f9939646ee3ee325e845c # v3
+        with:
+          config_data: |
+            extends: default
+            rules:
+              line-length: disable
+              comments: disable
+
+  shellcheck:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@00b27aa7cb85167568cb48a3838b75f4265f2bca # master
